@@ -282,3 +282,21 @@ class Bank(commands.Cog):
 
 async def setup(client):
     await client.add_cog(Bank(client))
+
+
+'''
+BOT ACTIONS
+
+sender command
+confirmation embed
+remove balance from sender
+edit embed: sent
+
+save file
+send embed notif to sender
+    
+send embedded DM with react and amount to reciever
+add balance to receiver
+send embedded DM
+
+'''
