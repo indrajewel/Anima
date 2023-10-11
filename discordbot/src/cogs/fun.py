@@ -9,6 +9,8 @@ from random import randint, choice
 
 import traceback
 
+SPAM = 'C:\\Users\\Adrian\\git\\Anima\\discordbot\\src\\data\\spamlist.txt'
+
 '''
 member = ctx.author
 avatar = member.avatar.url
@@ -23,6 +25,7 @@ class Fun(commands.Cog):
 
     @commands.command()
     async def spam(self, ctx, member: discord.Member = None):
+        spamlist = load_file(SPAM)
         if member == None:
             member = ctx.author
 

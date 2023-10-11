@@ -1,23 +1,27 @@
 import discord
 from discord.ext import commands
 
+from func import no_acc, pos, err
 
-async def sendmsg(ctx, member: discord.Member=None):
-    print(member)
-    if member == None:
-        member = ctx.author
+try:
+    async def sendmsg(ctx, member: discord.Member=None):
+        print(member)
+        if member == None:
+            member = ctx.author
 
-    if member == ctx.author:
-        embed = discord.Embed(color=0xff0000)
-        embed.add_field(name='No bank account found',
-                        value=f'You do not have a bank account. Please open an account with ``!open_account``', inline=True)
-        await ctx.send(embed=embed)
+        if member == ctx.author:
+            embed = discord.Embed(color=0xff0000)
+            embed.add_field(name='No bank account found',
+                            value=f'You do not have a bank account. Please open an account with ``!open_account``', inline=True)
+            await ctx.send(embed=embed)
 
-    else:
-        embed = discord.Embed(color=0xff0000)
-        embed.add_field(name='No bank account found',
-                        value=f'{member} does not have a bank account. Please open an account with ``!open_account``', inline=True)
-        await ctx.send(embed=embed)
+        else:
+            embed = discord.Embed(color=0xff0000)
+            embed.add_field(name='No bank account found',
+                            value=f'{member} does not have a bank account. Please open an account with ``!open_account``', inline=True)
+            await ctx.send(embed=embed)
+except:
+    traceback.print_stack()
 
 
 class Test(commands.Cog):
@@ -55,6 +59,30 @@ class Test(commands.Cog):
         if member == None:
             member = ctx.author
         await sendmsg(ctx, member)
+
+    @commands.command()
+    async def noacc(self, ctx, member: discord.Member=None):
+        if member == None:
+            member = ctx.author
+        await no_acc(ctx, member)
+
+    @commands.command()
+    async def check(self, ctx, member: discord.Member=None):
+        if member == None:
+            member = ctx.author
+
+        try:
+            await check_acc(ctx, member)
+        except:
+            traceback.print_stack()
+
+    @commands.command()
+    async def pos(self, ctx, amount):
+        await check_pos(ctx, int(amount))
+
+    @commands.command()
+    async def error(self, ctx):
+        await err(ctx)
 
 
 async def setup(client):

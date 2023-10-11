@@ -4,7 +4,8 @@ from config import COLOUR, CURRENCY
 
 from func import MEMDATA, BADWORDS, SPAM
 from func import memdata, badwords, spamlist
-from func import load_file, savememdata, gen_rand, balance_give, balance_take, check_acc, no_acc
+from func import load_file, savememdata, gen_rand, balance_give, balance_take, check_acc, no_acc, err
+from func import invalidmem
 from random import randint
 import traceback
 
@@ -40,22 +41,6 @@ def gen_card():
 class Bank(commands.Cog):
     def __init__(self, client):
         self.client = client
-
-    @commands.command()
-    async def check(self, ctx, member: discord.Member=None):
-        if member == None:
-            member = ctx.author
-
-        try:
-            await check_acc(ctx, member)
-        except:
-            traceback.print_stack()
-
-    @commands.command()
-    async def noacc(self, ctx, member: discord.Member=None):
-        if member == None:
-            member = ctx.author
-        await no_acc(ctx, member)
 
     @commands.command()
     async def open_account(self, ctx):
@@ -120,9 +105,10 @@ class Bank(commands.Cog):
             member = ctx.author
 
         print(member, member.id)
-        if check_acc(member) == True:
+        if member == ctx.author:
             await balance_give(member, 'bank', int(amount), ctx)
-            savememdata()
+        else:
+            await invalidmem(ctx)
 
     @commands.command(aliases=['take', 'seize'])
     async def bal_take(self, ctx, amount=None, member: discord.Member = None):

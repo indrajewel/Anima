@@ -4,7 +4,7 @@ import config
 from config import COLOUR
 
 from func import MEMDATA, BADWORDS, SPAM
-from func import memdata, badwords
+from func import memdata
 from func import load_file, savememdata
 from random import randint
 
@@ -15,6 +15,7 @@ avatar = member.avatar.url
 cogname = ctx.cog.qualified_name
 colour = config.embed_colour[str(cogname)]
 '''
+badwords = load_file(BADWORDS)
 
 cc_message = ['Suspect is drone, vehicles, or other hardened targets that poses a threat. Without the Crime Coefficient, a Threat Status is given (such as A+) and the Dominator will automatically switch to Destroy Decomposer.',
               'Suspect is not a target for enforcement action. The trigger of the Dominator will be locked.',

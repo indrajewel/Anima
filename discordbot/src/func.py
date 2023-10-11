@@ -35,6 +35,8 @@ def load_file(file_dir):
     print(f'**Opened: {file_dir[46:60]} | {data}')
     return data
 
+## SAVE DATA ##
+
 
 def savememdata():
     with open(MEMDATA, 'w') as outf:
@@ -51,9 +53,7 @@ def updatekey(author, key, data):
     memdata[str(author.id)][key] = data
     print(f'**Updated memdata: {author} ({author.id}: {key}:{data})')
 
-
-async def throw_err():
-    pass
+## GENERATE N RANDOM DIGITS ##
 
 
 def gen_rand(digits):
@@ -62,23 +62,9 @@ def gen_rand(digits):
 
 
 async def balance_give(member, account, amount, ctx):
+    print(f'**balance_give()')
 
-    check_acc(member)
-
-    try:
-        oldbal = memdata[str(member.id)][str(account)]
-        amount = int(amount)
-        print(f"**memdata['{member.id}'][{account}] {member} OldBal: {oldbal}")
-    except:
-        embed = discord.Embed(title='Balance Deposit Failed',
-                              color=COLOUR["Fail"])
-        embed.set_author(name=member, icon_url=member.avatar.url)
-        embed.add_field(
-            name='', value=f'{member} does not own a bank account.', inline=True)
-        await ctx.send(embed=embed)
-        print(f'{member} does not have bank account')
-
-    if amount > 0:
+    if await check_acc(ctx, member) == True and await pos(ctx, amount) == True:
         try:
             memdata[str(member.id)][str(account)] += amount
             newbal = memdata[str(member.id)][str(account)]
@@ -86,82 +72,52 @@ async def balance_give(member, account, amount, ctx):
             print(
                 f"**balance_give(): memdata[{member}][{account}] {member} NewBal: {newbal}")
 
-            embed = discord.Embed(title='Funds Added', color=COLOUR['Bank'])
+            embed = discord.Embed(
+                title='Funds Added', color=COLOUR['Bank'])
+            embed.set_author(name=member, icon_url=member.avatar.url)
+            embed.add_field(
+                name='', value=f"Deposited  {CURRENCY} {amount} to {member}'s bank account.", inline=True)
+            await ctx.send(embed=embed)
+            savememdata()
+
+        except:
+            await err(ctx)
+
+    else:
+        await err(ctx)
+
+
+async def balance_take(member, account, amount, ctx):
+    print(f'**balance_give()')
+
+    if await check_acc(ctx, member) == True and amount > 0:
+
+        try:
+            memdata[str(member.id)][str(account)] += amount
+            newbal = memdata[str(member.id)][str(account)]
+
+            print(
+                f"**balance_give(): memdata[{member}][{account}] {member} NewBal: {newbal}")
+
+            embed = discord.Embed(
+                title='Funds Added', color=COLOUR['Bank'])
             embed.set_author(name=member, icon_url=member.avatar.url)
             embed.add_field(
                 name='', value=f"Deposited  {CURRENCY} {amount} to {member}'s bank account.", inline=True)
             await ctx.send(embed=embed)
 
         except:
-            embed = discord.Embed(
-                title='Balance Deposit Failed', color=0xff0000)
-            embed.set_author(name=member, icon_url=member.avatar.url)
-            embed.add_field(
-                name='', value='Unknown error. Please try again later', inline=True)
-            await ctx.send(embed=embed)
-            print(f'failed to update {member} {account}')
+            await err(ctx)
 
     else:
-        embed = discord.Embed(
-            title='Balance Update Failed', color=COLOUR['Fail'])
-        embed.set_author(name=member, icon_url=member.avatar.url)
-        embed.add_field(
-            name='', value='Amount must be greater than 0.', inline=True)
+        print('else')
+        embed = discord.Embed(color=0xff0000)
+        embed.add_field(name='Invalid amount.',
+                        value='Amount must be greater than 0.', inline=True)
         await ctx.send(embed=embed)
         print("**Invalid amount. Must be greater than 0")
 
-
-async def balance_take(member, account, amount, ctx):
-    if check_acc(member) == True:
-        try:
-            oldbal = memdata[str(member.id)][str(account)]
-            amount = int(amount)
-
-            print(
-                f"**memdata['{member.id}'][{account}] {member} OldBal: {oldbal}")
-        except:
-            embed = discord.Embed(title='Balance Update Failed',
-                                  color=COLOUR["Fail"])
-            embed.set_author(name=member, icon_url=member.avatar.url)
-            embed.add_field(
-                name='', value=f'{member} does not own a bank account.', inline=True)
-            await ctx.send(embed=embed)
-
-            print(f'{member} does not have bank account')
-            traceback.print_stack()
-
-    if amount > 0:
-        try:
-            memdata[str(member.id)][str(account)] += amount
-            newbal = memdata[str(member.id)][str(account)]
-
-            print(
-                f"**balance_give(): memdata[{member}][{account}] {member} NewBal: {newbal}")
-
-            embed = discord.Embed(title='Funds Removed', color=COLOUR['Bank'])
-            embed.set_author(name=member, icon_url=member.avatar.url)
-            embed.add_field(
-                name='', value=f"Widthdrew  {CURRENCY} {amount} from {member}'s bank account.", inline=True)
-            await ctx.send(embed=embed)
-
-        except:
-            embed = discord.Embed(
-                title='Balance Update Failed', color=0xff0000)
-            embed.set_author(name=member, icon_url=member.avatar.url)
-            embed.add_field(
-                name='', value='Unknown error. Please try again later', inline=True)
-            await ctx.send(embed=embed)
-            print(f'failed to update {member} {account}')
-            traceback.print_stack()
-
-    else:
-        embed = discord.Embed(
-            title='Balance Update Failed', color=COLOUR['Fail'])
-        embed.set_author(name=member, icon_url=member.avatar.url)
-        embed.add_field(
-            name='', value='Amount must be greater than 0.', inline=True)
-        await ctx.send(embed=embed)
-        print("**Invalid amount. Must be greater than 0")
+## SEND EMBED: NO BANK ACCOUNT FOUND ##
 
 
 async def no_acc(ctx, member: discord.Member=None):
@@ -181,12 +137,34 @@ async def no_acc(ctx, member: discord.Member=None):
                         value=f'{member} does not have a bank account. Please open an account with ``!open_account``', inline=True)
         await ctx.send(embed=embed)
 
+## SEND EMBED: DATA CORRUPTED ##
+
 
 async def data_corrupt(ctx):
     embed = discord.Embed(color=COLOUR['Fail'])
-    embed.add_field(name='Data Corrupted',
-                    value=f'Please notify bot owner.', inline=True)
+    embed.add_field(name=':no_entry: Data Corrupted',
+                    value=f'Please notify bot owner!', inline=True)
     await ctx.send(embed=embed)
+
+## SEND EMBED: UNKNOWN ERROR ##
+
+
+async def err(ctx):
+    embed = discord.Embed(color=COLOUR['Fail'])
+    embed.add_field(name=':no_entry: Unknown Error',
+                    value=f'Please notify bot owner <@435615739274330154>!', inline=True)
+    await ctx.send(embed=embed)
+
+## SEND EMBED: INVALID MEMBER ##
+
+
+async def invalidmem(ctx):
+    embed = discord.Embed(color=COLOUR['Fail'])
+    embed.add_field(name='Invalid Input',
+                    value='Missing parameter: member', inline=False)
+    await ctx.send(embed=embed)
+
+## CHECK VALUE: IF USER HAS ACCOUNT ##
 
 
 async def check_acc(ctx, member):
@@ -216,9 +194,31 @@ async def check_acc(ctx, member):
         traceback.print_stack()
 
 
+async def pos(ctx, amount):
+    print('**pos():')
+    if int(amount) > 0:
+        print(f'**check_pos(): {amount} is positive integer')
+        return True
+    else:
+        print(f'**check_pos(): {amount} is not positive integer')
+        embed = discord.Embed(color=0xff0000)
+        embed.add_field(name='Invalid amount.',
+                        value='Amount must be greater than 0.', inline=True)
+        await ctx.send(embed=embed)
+        return False
+
+
+async def can_afford(member, account, amount):
+    if int(amount) > memdata[str(member.id)][str(account)]:
+        embed = discord.Embed(color=0xb12b2b)
+        embed.add_field(name='Insufficient Funds',
+                        value=f'Not enough {CURRENCY}!', inline=False)
+        await ctx.send(embed=embed)
+        return False
+    else:
+        return True
+
 memdata = load_file(MEMDATA)
-badwords = load_file(BADWORDS)
-spamlist = load_file(SPAM)
 
 '''
 items = open(SPAMFILE, 'w')

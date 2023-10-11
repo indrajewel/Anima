@@ -11,6 +11,9 @@ CURRENCY = ':mushroom:'
 
 '''
 moonbowels !bal_take 1 <@435615739274330154>
+
+
+## DEBUG ##
 traceback.print_stack()
 
 if member == None:
