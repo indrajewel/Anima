@@ -62,7 +62,7 @@ def gen_rand(digits):
 
 
 async def balance_give(member, account, amount, ctx):
-    print(f'**balance_give()')
+    print(f'**balance_give({member}, {account}, {amount})')
 
     if await check_acc(ctx, member) == True and await pos(ctx, amount) == True:
         try:
@@ -88,7 +88,7 @@ async def balance_give(member, account, amount, ctx):
 
 
 async def balance_take(member, account, amount, ctx):
-    print(f'**balance_give()')
+    print(f'**balance_take({member}, {account}, {amount})')
 
     if await check_acc(ctx, member) == True and amount > 0:
 
@@ -110,7 +110,7 @@ async def balance_take(member, account, amount, ctx):
             await err(ctx)
 
     else:
-        print('else')
+        print('balance_give else')
         embed = discord.Embed(color=0xff0000)
         embed.add_field(name='Invalid amount.',
                         value='Amount must be greater than 0.', inline=True)
@@ -143,7 +143,7 @@ async def no_acc(ctx, member: discord.Member=None):
 async def data_corrupt(ctx):
     embed = discord.Embed(color=COLOUR['Fail'])
     embed.add_field(name=':no_entry: Data Corrupted',
-                    value=f'Please notify bot owner!', inline=True)
+                    value=f'Please notify bot owner and/or reset with ``!open_account``', inline=True)
     await ctx.send(embed=embed)
 
 ## SEND EMBED: UNKNOWN ERROR ##
@@ -184,13 +184,10 @@ async def check_acc(ctx, member):
 
             await no_acc(ctx, member)
             return False
-
-        else:
-            print(f'''**check_acc(): Error at memdata[{member.id}] ({member})
-            ''')
-            await data_corrupt()
-            raise Excepion('file corrupted')
     except:
+        print(f'''**check_acc(): Error at memdata[{member.id}] ({member})
+            ''')
+        await data_corrupt(ctx)
         traceback.print_stack()
 
 

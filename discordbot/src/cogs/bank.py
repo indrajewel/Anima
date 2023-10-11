@@ -2,9 +2,13 @@ import discord
 from discord.ext import commands
 from config import COLOUR, CURRENCY
 
-from func import MEMDATA, BADWORDS, SPAM
-from func import memdata, badwords, spamlist
-from func import load_file, savememdata, gen_rand, balance_give, balance_take, check_acc, no_acc, err
+from func import MEMDATA
+from func import memdata
+from func import load_file, savememdata
+from func import gen_rand, check_acc
+from func import balance_give, balance_take
+
+from func import no_acc, err
 from func import invalidmem
 from random import randint
 import traceback
@@ -104,11 +108,10 @@ class Bank(commands.Cog):
         if member == None:
             member = ctx.author
 
-        print(member, member.id)
-        if member == ctx.author:
+        if await check_acc(ctx, member) == True:
+
+            print(member, member.id)
             await balance_give(member, 'bank', int(amount), ctx)
-        else:
-            await invalidmem(ctx)
 
     @commands.command(aliases=['take', 'seize'])
     async def bal_take(self, ctx, amount=None, member: discord.Member = None):
@@ -211,40 +214,6 @@ class Bank(commands.Cog):
             name='', value=f'{CURRENCY} {amount} widthdrawn bank.', inline=True)
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['bal'])
-    async def balance(self, ctx, member: discord.Member = None):
-        if member == None:
-            member = ctx.author
-
-        if check_acc(member) == True:
-
-            wallet = memdata[str(member.id)]['wallet']
-            bank = memdata[str(member.id)]['bank']
-
-            embed = discord.Embed(title='Balance', color=COLOUR['Bank'])
-            embed.set_author(name=member, icon_url=member.avatar.url)
-            embed.add_field(
-                name='Wallet', value=f'{CURRENCY} {wallet}', inline=True)
-            embed.add_field(
-                name='Bank', value=f'{CURRENCY} {bank}', inline=True)
-            await ctx.send(embed=embed)
-
-        else:
-            try:
-                if member == ctx.author:
-                    embed = discord.Embed(color=COLOUR['Bank'])
-                    embed.add_field(
-                        name='', value=f'You do not have a bank account. Please open an account with `!open_account`', inline=True)
-                    await ctx.send(embed=embed)
-                else:
-                    embed = discord.Embed(color=COLOUR['Bank'])
-                    embed.add_field(
-                        name='', value=f'**{member}** does not have a bank account. Please open an account with `!open_account`', inline=True)
-                    await ctx.send(embed=embed)
-
-            except:
-                traceback.print_stack()
-
     @commands.command(aliases=['cash'])
     async def wallet(self, ctx, member: discord.Member=None):
         if member == None:
@@ -252,7 +221,7 @@ class Bank(commands.Cog):
 
         print(memdata)
         try:
-            if check_acc(member) == True:
+            if await check_acc(ctx, member) == True:
                 wallet = memdata[str(member.id)]['wallet']
 
                 if member == ctx.author:
@@ -274,12 +243,34 @@ class Bank(commands.Cog):
                     await ctx.send(embed=embed)
 
             else:
-                embed = discord.Embed(color=COLOUR['Bank'])
-                embed.add_field(
-                    name='', value=f'**{member}** does not have a bank account. Please open an account with `!open_account`', inline=True)
-                await ctx.send(embed=embed)
+                await no_acc(ctx)
         except:
             traceback.print_stack()
+
+    @commands.command(aliases=['bal'])
+    async def balance(self, ctx):
+
+        if await check_acc(ctx, ctx.author) == True:
+            print(memdata)
+            wallet = memdata[str(ctx.author.id)]['wallet']
+            bank = memdata[str(ctx.author.id)]['bank']
+
+            print(wallet)
+            print(bank)
+
+            embed = discord.Embed(title='Balance', color=COLOUR['Bank'])
+            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar.url)
+            embed.add_field(
+                name='Wallet', value=f'{CURRENCY} {wallet}', inline=True)
+            embed.add_field(
+                name='Bank', value=f'{CURRENCY} {bank}', inline=True)
+            await ctx.author.send(embed=embed)
+
+            if isinstance(ctx.channel, discord.channel.DMChannel) == False:
+                embed = discord.Embed(color=COLOUR['Bank'])
+                embed.add_field(
+                    name='', value=f'Balance sent to DM.', inline=True)
+                await ctx.send(embed=embed)
 
     @commands.command(aliases=['give'])
     async def etransfer(self, ctx, amount, member: discord.Member = None):
