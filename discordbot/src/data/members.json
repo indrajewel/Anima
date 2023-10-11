@@ -1,13 +1,15 @@
 {
     "435615739274330154": {
         "name": "moonbowels",
-        "crime_coeff": 160,
-        "wallet": 52,
-        "bank": 509
+        "crime_coeff": 223,
+        "wallet": 10,
+        "bank": 200
     },
     "997280431324024903": {
         "name": "starboofer",
-        "crime_coeff": 0
+        "crime_coeff": 0,
+        "wallet": 10,
+        "bank": 200
     },
     "899726570233692161": {
         "name": "cocoleti",

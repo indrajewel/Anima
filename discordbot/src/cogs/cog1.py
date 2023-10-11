@@ -13,3 +13,26 @@ class cog(commands.Cog):
 
 async def setup(client):
     await client.add_cog(cog(client))
+
+
+dat = {
+    'id': {
+        'bank': 0
+    }
+}
+
+
+def check(id):
+    if 'wallet' and 'bank' in dat:
+        print(f'''**check_acc(): {id} owns an account
+        ''')
+        return True
+    elif 'wallet' and 'bank' not in dat:
+        print(f'''**check_acc(): {id} does not own an account
+        ''')
+        return False
+    else:
+        print('**file error')
+
+
+print(check('id'))

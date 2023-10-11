@@ -1,21 +1,27 @@
 import discord
 from discord.ext import commands
 from discord.ext.commands import CommandNotFound
-
-import config
-from config import COLOUR
 from bottoken import TOKEN
 
-from func import memdata, savememdata
+import config
+from func import load_file
+from func import memdata
+from config import COLOUR
+
+
 import os
 import traceback
 
 TEST_MODE = True
-DISABLE_EXT = ['__pycache__', 'cog1.py']
+DISABLE_EXT = ['testfuncs.py, ', '__pycache__', 'cog1.py']
 
 intents = discord.Intents.all()
 intents.members = True
 client = commands.Bot(command_prefix=config.PREFIX, intents=intents)
+
+MEMDATA = 'C:\\Users\\Adrian\\git\\Anima\\discordbot\\src\\data\\members.json'
+BADWORDS = 'C:\\Users\\Adrian\\git\\Anima\\discordbot\\src\\data\\badwords.txt'
+SPAM = 'C:\\Users\\Adrian\\git\\Anima\\discordbot\\src\\data\\spamlist.txt'
 
 
 @client.event
@@ -117,8 +123,9 @@ async def on_message(message):
 ''')
     await client.process_commands(message)
 
+    # adds member to memdata
     if str(message.author.id) not in memdata:
-            # updates memdata
+
         memdata[str(message.author.id)] = {
             'name': str(message.author), 'crime_coeff': 0}
         print(f'added {message.author} ({message.author.id}) to memdata')

@@ -8,7 +8,7 @@ from random import randint
 
 MEMDATA = 'C:\\Users\\Adrian\\git\\Anima\\discordbot\\src\\data\\members.json'
 BADWORDS = 'C:\\Users\\Adrian\\git\\Anima\\discordbot\\src\\data\\badwords.txt'
-SPAM = 'C:\\Users\\Adrian\\git\\Anima\\discordbot\\src\\dataspamlist.txt'
+SPAM = 'C:\\Users\\Adrian\\git\\Anima\\discordbot\\src\\data\\spamlist.txt'
 
 '''
 MEMDATA = f'{os.getcwd()}\data\members.json'
@@ -31,7 +31,7 @@ def load_file(file_dir):
             list1 = infile.readlines()
             data = [x.replace('\n', '') for x in list1]
 
-    print(f'**Opened: {file_dir[47:60]} | {data}')
+    print(f'**Opened: {file_dir[46:60]} | {data}')
     return data
 
 
@@ -60,9 +60,22 @@ def gen_rand(digits):
     return string
 
 
-def check_acc():
+def check_acc(member):
+    memdata = load_file(MEMDATA)
+    print(member.id)
 
-    pass
+    if 'wallet' in memdata[str(member.id)] and 'bank' in memdata[str(member.id)]:
+        print(f'''**check_acc(): True: {member} owns an account
+        ''')
+        return True
+    elif 'wallet' not in memdata[str(member.id)] and 'bank' not in memdata[str(member.id)]:
+        print(f'''**check_acc(): {member} does not own an account
+        ''')
+        return False
+    else:
+        print(f'''**check_acc(): Error at memdata[{member.id}] ({member})
+        ''')
+        raise Excepion('file corrupted')
 
 
 async def balance_give(member, account, amount, ctx):

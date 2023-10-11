@@ -2,7 +2,7 @@ import discord
 from discord.ext import commands
 from config import COLOUR, CURRENCY, PREFIX
 
-from func import memdata, badwords, spamlist, balance_give, balance_take
+# from func import memdata, badwords, spamlist, balance_give, balance_take
 from func import load_file, savememdata
 import time
 from random import randint, choice
