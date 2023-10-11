@@ -49,4 +49,3 @@ fun.py
 	spam - Functional
 	howgay - Functional
 	betflip - awaiting bank and funcs
-
