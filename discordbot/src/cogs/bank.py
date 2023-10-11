@@ -1,11 +1,11 @@
 import discord
 from discord.ext import commands
-from config import COLOUR, CURRENCY
+from config import COLOUR, CURRENCY, PREFIX
 
 from func import MEMDATA
 from func import memdata
 from func import load_file, savememdata
-from func import gen_rand, check_acc
+from func import gen_rand, check_acc, valid_amount
 from func import balance_give, balance_take
 
 from func import no_acc, err
@@ -105,13 +105,20 @@ class Bank(commands.Cog):
 
     @commands.command(aliases=['award'])
     async def bal_award(self, ctx, amount, member: discord.Member = None):
-        if member == None:
-            member = ctx.author
+        print(f'**{PREFIX}bal_award')
+        try:
+            if member == None:
+                member = ctx.author
 
-        if await check_acc(ctx, member) == True:
+            # if await check_acc(ctx, member) == True:
+                # print(f'member, member.id')
+                # await balance_give(ctx, member, 'bank', int(amount))
 
-            print(member, member.id)
-            await balance_give(member, 'bank', int(amount), ctx)
+                await balance_give(ctx, member, 'bank', int(amount))
+
+        except:
+            print(f'a')
+            traceback.print_stack()
 
     @commands.command(aliases=['take', 'seize'])
     async def bal_take(self, ctx, amount=None, member: discord.Member = None):

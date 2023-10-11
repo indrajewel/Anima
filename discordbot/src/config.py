@@ -10,6 +10,9 @@ COLOUR = {'Psychopass': 0x9c2b73,
 CURRENCY = ':mushroom:'
 
 '''
+
+
+
 moonbowels !bal_take 1 <@435615739274330154>
 
 
@@ -20,16 +23,58 @@ if member == None:
     member = ctx.author
 
 
-# Member does not have a bank account
+## TRANSACTION ALGORITHM ##
+- parameters ctx, author, amount, member
 
+{
+- load file
+balance = memdata[str(member.id)]['account']
+
+- check if account exists check_acc(ctx, member)
+    if a and b in data
+    elif not a and not b in data
+    else
+    
+- check if amount > 0 check_pos(ctx, amount)
+- check if amount < account balance
+
+- check amount valid_amount(ctx, author, account, amount)
+    if amount > 0
+        if amount > account balance
+        
+        else
+            perform operation   
+    else:
+        await embed
+            
+
+- perform operation
+    - bal_give
+    - bal_take
+    
+- save data
+- async await embed
+    - author
+    - member
+
+## CASES ##
+- sender does not have account
+- recipient does not have account
+- amount is < 0
+- 0 < amount < balance ###
+- balance < amount
+
+## CHECK IF NO MEMBER PARAM ##
+if member == None:
+        member = ctx.author
+
+# CHECK ACCOUNT
 if check_acc(member) == True:
 
     # CODE
         
         
-## CHECK IF NO MEMBER PARAM ##
-if member == None:
-        member = ctx.author
+
 
 ## NO ACCOUNT EMBED ###
 

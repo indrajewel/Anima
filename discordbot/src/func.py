@@ -61,30 +61,21 @@ def gen_rand(digits):
     return string
 
 
-async def balance_give(member, account, amount, ctx):
-    print(f'**balance_give({member}, {account}, {amount})')
+async def balance_give(ctx, member, account, amount):
+    try:
+        print(f'**balance_give({member}, {account}, {amount})')
+        if await check_acc(ctx, member) == True and await pos(ctx, int(amount)) == True:
+            try:
+                memdata[str(member.id)][str(account)] += amount
+                newbal = memdata[str(member.id)][str(account)]
 
-    if await check_acc(ctx, member) == True and await pos(ctx, amount) == True:
-        try:
-            memdata[str(member.id)][str(account)] += amount
-            newbal = memdata[str(member.id)][str(account)]
+                savememdata()
 
-            print(
-                f"**balance_give(): memdata[{member}][{account}] {member} NewBal: {newbal}")
-
-            embed = discord.Embed(
-                title='Funds Added', color=COLOUR['Bank'])
-            embed.set_author(name=member, icon_url=member.avatar.url)
-            embed.add_field(
-                name='', value=f"Deposited  {CURRENCY} {amount} to {member}'s bank account.", inline=True)
-            await ctx.send(embed=embed)
-            savememdata()
-
-        except:
-            await err(ctx)
-
-    else:
-        await err(ctx)
+            except:
+                await err(ctx)
+    except:
+        print(
+            '**balance_give(): Invalid params. Usage: balance_give(ctx, member, account, amount)')
 
 
 async def balance_take(member, account, amount, ctx):
@@ -164,6 +155,24 @@ async def invalidmem(ctx):
                     value='Missing parameter: member', inline=False)
     await ctx.send(embed=embed)
 
+
+async def embedd(ctx, member, account, amount):
+    embed = discord.Embed(color=COLOUR['Bank'])
+    embed.set_author(name=member, icon_url=member.avatar.url)
+
+    if account == 'wallet':
+        embed.add_field(
+            name='Funds Added', value=f"Deposited  {CURRENCY} {amount} to {member}'s bank account.", inline=True)
+    elif account == 'bank':
+        embed.add_field(
+            name='Funds Added', value=f"Deposited  {CURRENCY} {amount} to {member}'s bank account.", inline=True)
+
+    await ctx.send(embed=embed)
+
+
+async def embedw(ctx):
+    pass
+
 ## CHECK VALUE: IF USER HAS ACCOUNT ##
 
 
@@ -194,10 +203,10 @@ async def check_acc(ctx, member):
 async def pos(ctx, amount):
     print('**pos():')
     if int(amount) > 0:
-        print(f'**check_pos(): {amount} is positive integer')
+        print(f'**pos(): {amount} is positive integer')
         return True
     else:
-        print(f'**check_pos(): {amount} is not positive integer')
+        print(f'**pos(): {amount} is not positive integer')
         embed = discord.Embed(color=0xff0000)
         embed.add_field(name='Invalid amount.',
                         value='Amount must be greater than 0.', inline=True)
@@ -205,15 +214,36 @@ async def pos(ctx, amount):
         return False
 
 
-async def can_afford(member, account, amount):
+async def can_afford(ctx, member, account, amount):
     if int(amount) > memdata[str(member.id)][str(account)]:
         embed = discord.Embed(color=0xb12b2b)
         embed.add_field(name='Insufficient Funds',
-                        value=f'Not enough {CURRENCY}!', inline=False)
+                        value=f'Not enough {CURRENCY} in {account}!', inline=False)
         await ctx.send(embed=embed)
         return False
     else:
         return True
+
+
+async def valid_amount(ctx, author, account, amount):
+    if int(amount) > 0:
+        if int(amount) > memdata[str(ctx.author.id)][str(account)]:
+            if int(amount) > memdata[str(member.id)][str(account)]:
+                embed = discord.Embed(color=0xb12b2b)
+                embed.add_field(name='Insufficient Funds',
+                                value=f'Not enough {CURRENCY}!', inline=False)
+                await ctx.send(embed=embed)
+                return False
+
+        else:
+            return True
+    else:
+        print(f'**valid_amount(): {amount} is not positive integer')
+        embed = discord.Embed(color=0xff0000)
+        embed.add_field(name='Invalid amount.',
+                        value='Amount must be greater than 0.', inline=True)
+        await ctx.send(embed=embed)
+        return False
 
 memdata = load_file(MEMDATA)
 
