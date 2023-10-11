@@ -5,6 +5,7 @@ from config import COLOUR, CURRENCY
 import json
 import os
 from random import randint
+import traceback
 
 MEMDATA = 'C:\\Users\\Adrian\\git\\Anima\\discordbot\\src\\data\\members.json'
 BADWORDS = 'C:\\Users\\Adrian\\git\\Anima\\discordbot\\src\\data\\badwords.txt'
@@ -60,25 +61,10 @@ def gen_rand(digits):
     return string
 
 
-def check_acc(member):
-    memdata = load_file(MEMDATA)
-    print(member.id)
-
-    if 'wallet' in memdata[str(member.id)] and 'bank' in memdata[str(member.id)]:
-        print(f'''**check_acc(): True: {member} owns an account
-        ''')
-        return True
-    elif 'wallet' not in memdata[str(member.id)] and 'bank' not in memdata[str(member.id)]:
-        print(f'''**check_acc(): {member} does not own an account
-        ''')
-        return False
-    else:
-        print(f'''**check_acc(): Error at memdata[{member.id}] ({member})
-        ''')
-        raise Excepion('file corrupted')
-
-
 async def balance_give(member, account, amount, ctx):
+
+    check_acc(member)
+
     try:
         oldbal = memdata[str(member.id)][str(account)]
         amount = int(amount)
@@ -126,18 +112,23 @@ async def balance_give(member, account, amount, ctx):
 
 
 async def balance_take(member, account, amount, ctx):
-    try:
-        oldbal = memdata[str(member.id)][str(account)]
-        amount = int(amount)
-        print(f"**memdata['{member.id}'][{account}] {member} OldBal: {oldbal}")
-    except:
-        embed = discord.Embed(title='Balance Update Failed',
-                              color=COLOUR["Fail"])
-        embed.set_author(name=member, icon_url=member.avatar.url)
-        embed.add_field(
-            name='', value=f'{member} does not own a bank account.', inline=True)
-        await ctx.send(embed=embed)
-        print(f'{member} does not have bank account')
+    if check_acc(member) == True:
+        try:
+            oldbal = memdata[str(member.id)][str(account)]
+            amount = int(amount)
+
+            print(
+                f"**memdata['{member.id}'][{account}] {member} OldBal: {oldbal}")
+        except:
+            embed = discord.Embed(title='Balance Update Failed',
+                                  color=COLOUR["Fail"])
+            embed.set_author(name=member, icon_url=member.avatar.url)
+            embed.add_field(
+                name='', value=f'{member} does not own a bank account.', inline=True)
+            await ctx.send(embed=embed)
+
+            print(f'{member} does not have bank account')
+            traceback.print_stack()
 
     if amount > 0:
         try:
@@ -161,6 +152,7 @@ async def balance_take(member, account, amount, ctx):
                 name='', value='Unknown error. Please try again later', inline=True)
             await ctx.send(embed=embed)
             print(f'failed to update {member} {account}')
+            traceback.print_stack()
 
     else:
         embed = discord.Embed(
@@ -170,6 +162,58 @@ async def balance_take(member, account, amount, ctx):
             name='', value='Amount must be greater than 0.', inline=True)
         await ctx.send(embed=embed)
         print("**Invalid amount. Must be greater than 0")
+
+
+async def no_acc(ctx, member: discord.Member=None):
+    print(member)
+    if member == None:
+        member = ctx.author
+
+    if member == ctx.author:
+        embed = discord.Embed(color=COLOUR['Fail'])
+        embed.add_field(name='No bank account found',
+                        value=f'You do not have a bank account. Please open an account with ``!open_account``', inline=True)
+        await ctx.send(embed=embed)
+
+    else:
+        embed = discord.Embed(color=COLOUR['Fail'])
+        embed.add_field(name='No bank account found',
+                        value=f'{member} does not have a bank account. Please open an account with ``!open_account``', inline=True)
+        await ctx.send(embed=embed)
+
+
+async def data_corrupt(ctx):
+    embed = discord.Embed(color=COLOUR['Fail'])
+    embed.add_field(name='Data Corrupted',
+                    value=f'Please notify bot owner.', inline=True)
+    await ctx.send(embed=embed)
+
+
+async def check_acc(ctx, member):
+    print(f'check_acc()')
+    memdata = load_file(MEMDATA)
+    print(member.id)
+
+    try:
+        if 'wallet' in memdata[str(member.id)] and 'bank' in memdata[str(member.id)]:
+            print(f'''**check_acc(): True: {member} owns an account
+            ''')
+            return True
+
+        elif 'wallet' not in memdata[str(member.id)] and 'bank' not in memdata[str(member.id)]:
+            print(f'''**check_acc(): {member} does not own an account
+            ''')
+
+            await no_acc(ctx, member)
+            return False
+
+        else:
+            print(f'''**check_acc(): Error at memdata[{member.id}] ({member})
+            ''')
+            await data_corrupt()
+            raise Excepion('file corrupted')
+    except:
+        traceback.print_stack()
 
 
 memdata = load_file(MEMDATA)
