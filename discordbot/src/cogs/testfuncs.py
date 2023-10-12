@@ -29,6 +29,7 @@ class Test(commands.Cog):
         self.client = client
 
     @commands.command()
+    @commands.is_owner()
     async def testdm(self, ctx, user: discord.Member=None):
         if user == None:
             user = ctx.author
@@ -42,6 +43,7 @@ class Test(commands.Cog):
         await user.send(embed=embed)
 
     @commands.command()
+    @commands.is_owner()
     async def testmsg(self, ctx, user: discord.Member=None):
         if user == None:
             user = ctx.author
@@ -55,18 +57,21 @@ class Test(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
+    @commands.is_owner()
     async def nestedmsg(self, ctx, member: discord.Member=None):
         if member == None:
             member = ctx.author
         await sendmsg(ctx, member)
 
     @commands.command()
+    @commands.is_owner()
     async def noacc(self, ctx, member: discord.Member=None):
         if member == None:
             member = ctx.author
         await no_acc(ctx, member)
 
     @commands.command()
+    @commands.is_owner()
     async def check(self, ctx, member: discord.Member=None):
         if member == None:
             member = ctx.author
@@ -77,10 +82,12 @@ class Test(commands.Cog):
             traceback.print_stack()
 
     @commands.command()
+    @commands.is_owner()
     async def pos(self, ctx, amount):
         await check_pos(ctx, int(amount))
 
     @commands.command()
+    @commands.is_owner()
     async def error(self, ctx):
         await err(ctx)
 

@@ -104,7 +104,8 @@ async def reload(ctx):
             print(e)
 
     print(f'**Extensions Reloaded: {loaded}')
-    print(f'**Extensions Failed: {failed}')
+    print(f'''**Extensions Failed: {failed}
+    ''')
 
     embed = discord.Embed(title='Extensions Reloaded',
                           color=COLOUR['System'])

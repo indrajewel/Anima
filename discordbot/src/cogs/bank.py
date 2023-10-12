@@ -6,7 +6,8 @@ from func import MEMDATA
 from func import memdata
 from func import load_file, savememdata
 from func import gen_rand, check_acc, valid_amount
-from func import balance_give, balance_take
+from func import balance_give, balance_take, pos
+from func import embed_d, embed_w
 
 from func import no_acc, err
 from func import invalidmem
@@ -104,122 +105,76 @@ class Bank(commands.Cog):
                 await ctx.send(embed=embed)
 
     @commands.command(aliases=['award'])
+    @commands.is_owner()
     async def bal_award(self, ctx, amount, member: discord.Member = None):
-        print(f'**{PREFIX}bal_award')
+        if member == None:
+            member = ctx.author
+        print(
+            f'**{PREFIX}bal_award author:{ctx.author}, member:{member}, amount:{amount}')
+        memdata = load_file(MEMDATA)
+
         try:
-            if member == None:
-                member = ctx.author
-
-            # if await check_acc(ctx, member) == True:
-                # print(f'member, member.id')
-                # await balance_give(ctx, member, 'bank', int(amount))
-
-                await balance_give(ctx, member, 'bank', int(amount))
+            if await check_acc(ctx, member) == True:
+                if await balance_give(ctx, member, 'bank', int(amount)) == True:
+                    await embed_d(ctx, member, 'bank', amount)
+                    savememdata()
 
         except:
-            print(f'a')
+            print(f'{PREFIX}bal_award error')
             traceback.print_stack()
 
     @commands.command(aliases=['take', 'seize'])
+    @commands.is_owner()
     async def bal_take(self, ctx, amount=None, member: discord.Member = None):
         if member == None:
             member = ctx.author
-
-        print(member, member.id)
-
-        if amount <= 0:
-            balance_take(member, 'bank', int(amount), ctx)
-            savememdata()
-
-            embed = discord.Embed(title='Funds Seized', color=COLOUR['Bank'])
-            embed.set_author(name=member, icon_url=member.avatar.url)
-            embed.add_field(
-                name='', value=f"Seized  {CURRENCY} {amount} from {member}'s bank account.", inline=True)
-            await ctx.send(embed=embed)
-
-        if amount > 0:
-            try:
-                await balance_take(member, 'bank', int(amount), ctx)
-                savememdata()
-
-            except Exception as e:
-                traceback.print_tb(e.__traceback__)
-                print(e)
-
-        else:
-            print(f'**bal_take(): error')
-        print(member, member.id)
+        print(
+            f'**{PREFIX}bal_take author:{ctx.author}, member:{member}, amount:{amount}')
+        memdata = load_file(MEMDATA)
 
         try:
-            await balance_take(member, 'bank', int(amount))
-            savememdata()
+            if await check_acc(ctx, member) == True:
+                await balance_take(ctx, member, 'bank', int(amount))
 
-            embed = discord.Embed(title='Funds Seized',
-                                  color=COLOUR['Bank'])
-            embed.set_author(name=member, icon_url=member.avatar.url)
-            embed.add_field(
-                name='', value=f"Seized  {CURRENCY} {amount} from {member}'s bank account.", inline=True)
-            await ctx.send(embed=embed)
-        except Exception as e:
-            traceback.print_tb(e.__traceback__)
-            print(e)
+                if await balance_take(ctx, member, 'bank', int(amount)) == True:
+                    await embed_w(ctx, member, 'bank', amount)
+                    savememdata()
+
+        except:
+            print(f'{PREFIX}bal_take error')
+            traceback.print_stack()
 
     @commands.command(aliases=['d'])
     async def deposit(self, ctx, amount):
+        print(f'***{PREFIX}deposit {ctx.author} {amount}')
+        memdata = load_file(MEMDATA)
         try:
-            if check_acc(member) == True:
-
-                print(f'True')
-
-                try:
-                    if amount <= 0:
-                        embed = discord.Embed(color=0xff0000)
-                        embed.set_author(
-                            name=member, icon_url=member.avatar.url)
-                        embed.add_field(
-                            name='', value=f'Amount must be greater than 0.', inline=True)
-                        await ctx.send(embed=embed)
-                    else:
-
-                        if check_acc(member) == True:
-                            balance_take(ctx.author, 'wallet', amount)
-                            balance_give(ctx.author, 'bank', amount)
-                            embed = discord.Embed(color=0xff0000)
-                            embed.set_author(
-                                name=member, icon_url=member.avatar.url)
-                            embed.add_field(
-                                name='', value=f'{CURRENCY} {amount} deposited to bank.', inline=True)
-                            await ctx.send(embed=embed)
-
-                except:
-                    traceback.print_stack()
-
-            else:
-                print('False')
-                if member == ctx.author:
-                    embed = discord.Embed(color=COLOUR['Bank'])
-                    embed.add_field(
-                        name='', value=f'You do not have a bank account. Please open an account with `!open_account`', inline=True)
-                    await ctx.send(embed=embed)
-                else:
-                    embed = discord.Embed(color=COLOUR['Bank'])
-                    embed.add_field(
-                        name='', value=f'**{member}** does not have a bank account. Please open an account with `!open_account`', inline=True)
-                    await ctx.send(embed=embed)
-
-        except:
+            if await pos(ctx, amount) == True:
+                if await balance_take(ctx, ctx.author, 'wallet', int(amount)) == True and await balance_give(ctx, ctx.author, 'bank', int(amount)) == True:
+                    await embed_d(ctx, ctx.author, 'bank', amount)
+                    savememdata()
+                    print(
+                        f'***{PREFIX}deposit {amount} in {ctx.author} bank')
+        except Exception as e:
+            print(f'{PREFIX}deposit error')
+            print(e)
             traceback.print_stack()
 
     @commands.command(aliases=['w'])
     async def widthdraw(self, ctx, amount):
-        balance_give(ctx.author, 'bank', amount)
-        balance_take(ctx.author, 'wallet', amount)
-
-        embed = discord.Embed(color=0xff0000)
-        embed.set_author(name=member, icon_url=member.avatar.url)
-        embed.add_field(
-            name='', value=f'{CURRENCY} {amount} widthdrawn bank.', inline=True)
-        await ctx.send(embed=embed)
+        print(f'***{PREFIX}widthdraw {ctx.author} {amount}')
+        memdata = load_file(MEMDATA)
+        try:
+            if await pos(ctx, amount) == True:
+                if await balance_take(ctx, ctx.author, 'wallet', int(amount)) == True and await balance_give(ctx, ctx.author, 'bank', int(amount)) == True:
+                    await embed_w(ctx, ctx.author, 'bank', amount)
+                    savememdata()
+                    print(
+                        f'***{PREFIX}widthdraw {amount} from {ctx.author} bank')
+        except Exception as e:
+            print(f'{PREFIX}widthdraw error')
+            print(e)
+            traceback.print_stack()
 
     @commands.command(aliases=['cash'])
     async def wallet(self, ctx, member: discord.Member=None):
