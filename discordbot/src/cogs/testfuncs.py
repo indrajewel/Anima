@@ -2,26 +2,7 @@ import discord
 from discord.ext import commands
 
 from func import no_acc, pos, err
-
-try:
-    async def sendmsg(ctx, member: discord.Member=None):
-        print(member)
-        if member == None:
-            member = ctx.author
-
-        if member == ctx.author:
-            embed = discord.Embed(color=0xff0000)
-            embed.add_field(name='No bank account found',
-                            value=f'You do not have a bank account. Please open an account with ``!open_account``', inline=True)
-            await ctx.send(embed=embed)
-
-        else:
-            embed = discord.Embed(color=0xff0000)
-            embed.add_field(name='No bank account found',
-                            value=f'{member} does not have a bank account. Please open an account with ``!open_account``', inline=True)
-            await ctx.send(embed=embed)
-except:
-    traceback.print_stack()
+import asyncio
 
 
 class Test(commands.Cog):
@@ -90,6 +71,52 @@ class Test(commands.Cog):
     @commands.is_owner()
     async def error(self, ctx):
         await err(ctx)
+
+    '''
+    @commands.command()
+    @commands.is_owner()
+    async def testreact(self, ctx):
+        yas = '✔️'
+        nay = '❌'
+
+        yeno = ['✔️', '❌']
+
+        def check(reaction, user):
+            return user == ctx.author and str(reaction.emoji) in yesno
+        reaction, user = await client.wait_for('reaction_add', timeout=60.0, check=check)
+
+        if str(reaction.emoji) == yas:
+            embed = discord.Embed(color=0xc75757)
+            embed.add_field(name='', value='testembed', inline=False)
+            await ctx.send(embed=embed)
+            return await ctx.send(embed=embed)
+
+        # there's only two reactions, so if the above function didn't return, it means the second reaction (nay) was used instead
+        await ctx.send("Cancelled")
+    '''
+    '''
+    @commands.command()
+    @commands.is_owner()
+    async def testr(ctx):
+        try:
+            if message.content.startswith('$thumb'):
+                channel = message.channel
+                await channel.send('Send me that reaction, mate')
+
+                def check(reaction, user):
+                    return user == message.author and str(reaction.emoji) == ''
+
+                try:
+                    reaction, user = await client.wait_for('reaction_add', timeout=60.0, check=check)
+                except asyncio.TimeoutError:
+                    await channel.send('')
+                else:
+                    await channel.send('')
+
+        except Exception as e:
+            print(e)
+            traceback.print_stack()
+    '''
 
 
 async def setup(client):

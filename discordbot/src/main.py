@@ -109,9 +109,9 @@ async def reload(ctx):
 
     embed = discord.Embed(title='Extensions Reloaded',
                           color=COLOUR['System'])
-    embed.add_field(name=':white_check_mark:Load Succes', value='\n'.join(
+    embed.add_field(name='Load Succes :white_check_mark:', value='\n'.join(
         f"{filename}" for filename in loaded), inline=True)
-    embed.add_field(name=':no_entry:Load Failure', value='\n'.join(
+    embed.add_field(name='Load Failure :no_entry:', value='\n'.join(
         f"{filename}" for filename in failed), inline=True)
 
     await ctx.send(embed=embed)
@@ -138,7 +138,13 @@ async def on_command_error(ctx, error):
     if isinstance(error, CommandNotFound):
         embed = discord.Embed(color=config.COLOUR['Fail'])
         embed.add_field(
-            name='', value=f'Command not found. Use ``{config.PREFIX}help`` to view available commands', inline=True)
+            name='Command not found', value=f'Use ``{config.PREFIX}help`` to view available commands.', inline=True)
+        await ctx.send(embed=embed)
+
+    if error.__class__ is commands.MissingRequiredArgument:
+        embed = discord.Embed(color=config.COLOUR['Fail'])
+        embed.add_field(
+            name='Invalid Inputs', value=f'Check parameters.', inline=True)
         await ctx.send(embed=embed)
 
 

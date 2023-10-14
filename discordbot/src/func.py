@@ -1,6 +1,6 @@
 import discord
 from discord.ext import commands
-from config import COLOUR, CURRENCY
+from config import COLOUR, CURRENCY, BOT_OWNER
 
 import json
 import os
@@ -79,7 +79,7 @@ async def no_acc(ctx, member: discord.Member=None):
     else:
         embed = discord.Embed(color=COLOUR['Fail'])
         embed.add_field(name='No bank account found',
-                        value=f'{member} does not have a bank account. Please open an account with ``!open_account``', inline=True)
+                        value=f'**{member}** does not have a bank account. Please open an account with ``!open_account``', inline=True)
         await ctx.send(embed=embed)
 
 ## SEND EMBED: DATA CORRUPTED ##
@@ -88,7 +88,7 @@ async def no_acc(ctx, member: discord.Member=None):
 async def data_corrupt(ctx):
     embed = discord.Embed(color=COLOUR['Fail'])
     embed.add_field(name=':no_entry: Data Corrupted',
-                    value=f'Please notify bot owner and/or reset with ``!open_account``', inline=True)
+                    value=f'Please reset with ``!open_account`` and/or notify bot owner <@435615739274330154>.', inline=True)
     await ctx.send(embed=embed)
 
 ## SEND EMBED: UNKNOWN ERROR ##
@@ -97,7 +97,7 @@ async def data_corrupt(ctx):
 async def err(ctx):
     embed = discord.Embed(color=COLOUR['Fail'])
     embed.add_field(name=':no_entry: Unknown Error',
-                    value=f'Please notify bot owner <@435615739274330154>!', inline=True)
+                    value=f'Please notify bot owner {BOT_OWNER}!', inline=True)
     await ctx.send(embed=embed)
 
 ## SEND EMBED: INVALID MEMBER ##
@@ -165,11 +165,12 @@ async def check_acc(ctx, member):
 
 
 async def pos(ctx, amount):
+    print(f'pos({amount})')
     if int(amount) > 0:
-        print(f'**pos({amount}): True - is positive integer')
+        print(f'    pos(): True - is positive integer')
         return True
     else:
-        print(f'**pos({amount}): False - is not positive integer')
+        print(f'    pos(): False - is not positive integer')
         embed = discord.Embed(color=COLOUR['Fail'])
         embed.add_field(name='Invalid amount.',
                         value='Amount must be greater than 0.', inline=True)
@@ -177,58 +178,51 @@ async def pos(ctx, amount):
         return False
 
 
-async def can_afford(ctx, member, account, amount):
-    print(f'**can_afford({member}, {account}, {amount})')
-    if int(amount) > memdata[str(member.id)][str(account)]:
+async def can_afford(ctx, account, amount):
+    print(f'***can_afford({ctx.author}, {account}, {amount})')
+    if int(amount) > memdata[str(ctx.author.id)][str(account)]:
         embed = discord.Embed(color=COLOUR['Fail'])
         embed.add_field(name='Insufficient Funds',
                         value=f'Not enough {CURRENCY} in {account}!', inline=False)
         await ctx.send(embed=embed)
+        print(f'    can_afford({ctx.author}, {account}, {amount}): False')
         return False
+
     else:
+        print(f'    can_afford({ctx.author}, {account}, {amount}): True')
         return True
 
 
-async def valid_amount(ctx, author, account, amount):
-    print(f'**valid_amount({author}, {account}, {amount})')
-    if int(amount) > 0:
-        if int(amount) > memdata[str(ctx.author.id)][str(account)]:
-            if int(amount) > memdata[str(member.id)][str(account)]:
-                embed = discord.Embed(color=0xb12b2b)
-                embed.add_field(name='Insufficient Funds',
-                                value=f'Not enough {CURRENCY}!', inline=False)
-                await ctx.send(embed=embed)
-                return False
+async def sufficient(ctx, account, amount):
+    print(f'***sufficient({account}, {amount})')
+    if await pos(ctx, amount) == True and \
+            await can_afford(ctx, account, amount) == True:
+        return True
 
-        else:
-            return True
     else:
-        print(f'**valid_amount(): {amount} is not positive integer')
-        embed = discord.Embed(color=COLOUR['Fail'])
-        embed.add_field(name='Invalid amount',
-                        value='Amount must be greater than 0.', inline=True)
-        await ctx.send(embed=embed)
         return False
 
 
-async def balance_give(ctx, member, account, amount):
+def balance_give(ctx, member, account, amount):
     print(f'***balance_give({member}, {account}, {amount})')
     try:
         memdata[str(member.id)][str(account)] += amount
         newbal = memdata[str(member.id)][str(account)]
-        print(f'***balance_give({member}, {account}, {amount}) True')
+        print(
+            f'    ***balance_give({member}, {account}, {amount}) Total: {newbal}')
         return True
 
     except:
         print('***balance_give(): Error; check params, check_acc(), pos()')
 
 
-async def balance_take(ctx, member, account, amount):
+def balance_take(ctx, member, account, amount):
     print(f'***balance_take({member}, {account}, {amount})')
     try:
         memdata[str(member.id)][str(account)] -= amount
         newbal = memdata[str(member.id)][str(account)]
-        print(f'***balance_take({member}, {account}, {amount}) True')
+        print(
+            f'    ***balance_take({member}, {account}, {amount}) Total: {newbal}')
         return True
 
     except:

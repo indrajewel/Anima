@@ -1,5 +1,7 @@
 # Anima
 WIP Discord Bot
+- File saving and loading functional
+- Economy System WIP
 
 ## main.py
 	
@@ -10,19 +12,19 @@ WIP Discord Bot
 	addmem(author)
 	gen_rand(digits)
 
-	balance_give
-	balance_take
-
-	async no_acc(ctx)
-	async data_corrupt(ctx)
-	async invalidmem(ctx)
-	async err(ctx)
-	async embedd(ctx)
+	await no_acc(ctx, member=None)
+	await data_corrupt(ctx)
+	await invalidmem(ctx)
+	await err(ctx)
+	await embedd(ctx)
 	
 	await check_acc(ctx, member)
-	await pos()
+	await pos(ctx, amount)
 	await can_afford(ctx, member, account, amount)
 	valid_amount(ctx, author, account, amount)
+
+	balance_give(ctx, author, account, amount, member=None)
+	balance_take(ctx, author, account, amount, member=None)
 
 	memdata = load_file(MEMDATA)
 
@@ -31,16 +33,17 @@ WIP Discord Bot
 	open_account - Functional
 
 	bal_award - Functional
-	bal_take - WIP
+	bal_take - Functional
 
-	deposit - WIP
-	widthdraw - WIP	
+	deposit - Functional
+	widthdraw - Functional
 
 	wallet - Functional
 	balance - Functional
 
 	etransfer - WIP
 	drop - WIP
+	awarddrop
 	getcard - Functional
 
 ## fun.py

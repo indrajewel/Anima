@@ -5,7 +5,7 @@ from config import COLOUR, CURRENCY, PREFIX
 from func import MEMDATA
 from func import memdata
 from func import load_file, savememdata
-from func import gen_rand, check_acc, valid_amount
+from func import gen_rand, check_acc, sufficient
 from func import balance_give, balance_take, pos
 from func import embed_d, embed_w
 
@@ -106,7 +106,7 @@ class Bank(commands.Cog):
 
     @commands.command(aliases=['award'])
     @commands.is_owner()
-    async def bal_award(self, ctx, amount, member: discord.Member = None):
+    async def bal_award(self, ctx, member: discord.Member = None, amount=50):
         if member == None:
             member = ctx.author
         print(
@@ -114,34 +114,36 @@ class Bank(commands.Cog):
         memdata = load_file(MEMDATA)
 
         try:
-            if await check_acc(ctx, member) == True:
-                if await balance_give(ctx, member, 'bank', int(amount)) == True:
-                    await embed_d(ctx, member, 'bank', amount)
-                    savememdata()
+            if await check_acc(ctx, member) == True and \
+                    balance_give(ctx, member, 'bank', int(amount)) == True:
+                savememdata()
+                await embed_d(ctx, member, 'bank', amount)
 
-        except:
+        except Exception as e:
             print(f'{PREFIX}bal_award error')
+            print(e)
             traceback.print_stack()
 
     @commands.command(aliases=['take', 'seize'])
     @commands.is_owner()
-    async def bal_take(self, ctx, amount=None, member: discord.Member = None):
+    async def bal_take(self, ctx, member: discord.Member = None, amount=50):
         if member == None:
             member = ctx.author
+        if amount == None:
+            amount = 50
         print(
             f'**{PREFIX}bal_take author:{ctx.author}, member:{member}, amount:{amount}')
         memdata = load_file(MEMDATA)
 
         try:
-            if await check_acc(ctx, member) == True:
-                await balance_take(ctx, member, 'bank', int(amount))
+            if await check_acc(ctx, member) == True and \
+                    balance_take(ctx, member, 'bank', int(amount)) == True:
+                savememdata()
+                await embed_w(ctx, member, 'bank', amount)
 
-                if await balance_take(ctx, member, 'bank', int(amount)) == True:
-                    await embed_w(ctx, member, 'bank', amount)
-                    savememdata()
-
-        except:
+        except Exception as e:
             print(f'{PREFIX}bal_take error')
+            print(e)
             traceback.print_stack()
 
     @commands.command(aliases=['d'])
@@ -149,30 +151,36 @@ class Bank(commands.Cog):
         print(f'***{PREFIX}deposit {ctx.author} {amount}')
         memdata = load_file(MEMDATA)
         try:
-            if await pos(ctx, amount) == True:
-                if await balance_take(ctx, ctx.author, 'wallet', int(amount)) == True and await balance_give(ctx, ctx.author, 'bank', int(amount)) == True:
-                    await embed_d(ctx, ctx.author, 'bank', amount)
-                    savememdata()
-                    print(
-                        f'***{PREFIX}deposit {amount} in {ctx.author} bank')
+            if await check_acc(ctx, ctx.author) and \
+                    await sufficient(ctx, 'wallet', amount) and \
+                    balance_take(ctx, ctx.author, 'wallet', int(amount)) == True and \
+                    balance_give(ctx, ctx.author, 'bank', int(amount)) == True:
+
+                await embed_d(ctx, ctx.author, 'bank', amount)
+                savememdata()
+                print(f'***{PREFIX}deposit {amount} in {ctx.author} bank')
+
         except Exception as e:
             print(f'{PREFIX}deposit error')
             print(e)
             traceback.print_stack()
 
     @commands.command(aliases=['w'])
-    async def widthdraw(self, ctx, amount):
-        print(f'***{PREFIX}widthdraw {ctx.author} {amount}')
+    async def withdraw(self, ctx, amount):
+        print(f'***{PREFIX}withdraw {ctx.author} {amount}')
         memdata = load_file(MEMDATA)
         try:
-            if await pos(ctx, amount) == True:
-                if await balance_take(ctx, ctx.author, 'wallet', int(amount)) == True and await balance_give(ctx, ctx.author, 'bank', int(amount)) == True:
-                    await embed_w(ctx, ctx.author, 'bank', amount)
-                    savememdata()
-                    print(
-                        f'***{PREFIX}widthdraw {amount} from {ctx.author} bank')
+            if await check_acc(ctx, ctx.author) and \
+                    await sufficient(ctx, 'bank', amount) and \
+                    balance_take(ctx, ctx.author, 'bank', int(amount)) == True and \
+                    balance_give(ctx, ctx.author, 'wallet', int(amount)) == True:
+
+                await embed_w(ctx, ctx.author, 'bank', amount)
+                savememdata()
+                print(f'***{PREFIX}withdraw {amount} from {ctx.author} bank')
+
         except Exception as e:
-            print(f'{PREFIX}widthdraw error')
+            print(f'{PREFIX}withdraw error')
             print(e)
             traceback.print_stack()
 
@@ -185,27 +193,21 @@ class Bank(commands.Cog):
         try:
             if await check_acc(ctx, member) == True:
                 wallet = memdata[str(member.id)]['wallet']
+                embed = discord.Embed(color=COLOUR['Bank'])
+                embed.set_author(name=member, icon_url=member.avatar.url)
 
                 if member == ctx.author:
                     try:
-                        embed = discord.Embed(color=COLOUR['Bank'])
-                        embed.set_author(
-                            name=member, icon_url=member.avatar.url)
+
                         embed.add_field(
-                            name='', value=f'You have {CURRENCY} {wallet} in your wallet.', inline=True)
-                        await ctx.send(embed=embed)
+                            name='Wallet', value=f'You have {CURRENCY} {wallet} in your wallet.', inline=True)
                     except:
                         traceback.print_stack()
                 else:
-
-                    embed = discord.Embed(color=COLOUR['Bank'])
-                    embed.set_author(name=member, icon_url=member.avatar.url)
                     embed.add_field(
-                        name='', value=f'{member} has {CURRENCY} {wallet} in their wallet', inline=True)
-                    await ctx.send(embed=embed)
+                        name='Wallet', value=f'{member} has {CURRENCY} {wallet} in their wallet', inline=True)
 
-            else:
-                await no_acc(ctx)
+                await ctx.send(embed=embed)
         except:
             traceback.print_stack()
 

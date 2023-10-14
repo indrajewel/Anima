@@ -49,18 +49,38 @@ class Fun(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['bf', 'flip', 'coinflip'])
-    async def betflip(self, ctx, predictin=None, amount=None):
+    async def betflip(self, ctx, predictin, amount=None):
 
         '''
+        heads = ['heads', 'head', 'h']
+        tails = ['tails', 'tail', 't']
+
+        if predictin.lower() in heads:
+            predictin = 'heads'
+        elif predictin.lower() in tails:
+            predictin = 'tails'
+
+        sides = ['heads', 'tails']
+        result = choice(sides)
+
+        if predictin == result:
+            payout = int(amount)*2
+            print(f'payout: {payout}')
+
+            balance_give(ctx, ctx.author, 'wallet', payout)
+
+            embed = discord.Embed(title='Coin Flip', color=colour)
+            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar.url)
+            embed.add_field(name='', value=f'Flipped {result}', inline=False)
+            embed.add_field(name='', value=f'{ctx.author} won  {CURRENCY}{payout}!', inline=False)
+            await ctx.send(embed=embed)
 
 
 
 
+        if predictin == None
 
-
-        if (predictin or amount) == None
-
-        elif amount > 0
+        elif (check_acc() and sufficient() )
             if bank true
 
             else
