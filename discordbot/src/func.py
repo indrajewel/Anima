@@ -138,7 +138,7 @@ async def embed_w(ctx, member, account, amount):
     await ctx.send(embed=embed)
 
 
-'## BANK FUNCTIONS ##'
+'## BANK VALIDATE FUNCTIONS ##'
 
 
 async def check_acc(ctx, member, embed=True):
@@ -163,7 +163,7 @@ async def check_acc(ctx, member, embed=True):
 
 
 async def pos(ctx, amount, embed=True):
-    print(f'pos({amount})')
+    print(f'**pos({amount})')
     if int(amount) > 0:
         print(f'    pos(): True - is positive integer')
         return True
@@ -178,13 +178,13 @@ async def pos(ctx, amount, embed=True):
 
 
 async def can_afford(ctx, account, amount):
-    print(f'***can_afford({ctx.author}, {account}, {amount})')
+    print(f'**can_afford({ctx.author}, {account}, {amount})')
     if int(amount) > memdata[str(ctx.author.id)][str(account)]:
+        print(f'    can_afford({ctx.author}, {account}, {amount}): False')
         embed = discord.Embed(color=COLOUR['Fail'])
         embed.add_field(name='Insufficient Funds',
                         value=f'Not enough {CURRENCY} in {account}!', inline=False)
         await ctx.send(embed=embed)
-        print(f'    can_afford({ctx.author}, {account}, {amount}): False')
         return False
 
     else:
@@ -200,6 +200,18 @@ async def sufficient(ctx, account, amount):
 
     else:
         return False
+
+
+async def validate(ctx, member, account, amount):
+    print(f'***validate({account}, {amount})')
+    if await check_acc(ctx, member) == True and \
+            await sufficient(ctx, account, amount) == True:
+        return True
+
+    else:
+        return False
+
+'## BALANCE UPDATE FUNCS ##'
 
 
 def balance_give(ctx, member, account, amount):

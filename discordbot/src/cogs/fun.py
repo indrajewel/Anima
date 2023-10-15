@@ -2,9 +2,9 @@ import discord
 from discord.ext import commands
 from config import COLOUR, CURRENCY, PREFIX
 
-from func import load_file, savememdata
-from func import memdata
+from func import load_file, savememdata, MEMDATA
 from func import balance_give, balance_take
+from func import check_acc, sufficient, validate
 import time
 from random import randint, choice
 
@@ -67,50 +67,59 @@ class Fun(commands.Cog):
 
     @commands.command(aliases=['bf', 'flip', 'coinflip'])
     async def betflip(self, ctx, predictin, amount=None):
+        try:
+            if await validate(ctx, ctx.author, 'wallet', amount) == True:
 
-        heads = ['heads', 'head', 'h']
-        tails = ['tails', 'tail', 't']
+                heads = ['heads', 'head', 'h']
+                tails = ['tails', 'tail', 't']
 
-        if predictin.lower() in heads:
-            predict = 'heads'
-        elif predictin.lower() in tails:
-            predict = 'tails'
-        else:
-            embed = discord.Embed(color=0xff0000)
-            embed.add_field(
-                name='Invalid Inputs', value='Usage: ``!betflip [predict] [bet amount]`` ``!betflip heads 1``', inline=False)
-            embed.add_field(name='', value='Aliases: !bf, !flip', inline=True)
-            embed.add_field(
-                name='', value='Predictions: "heads", "head", "h", "tails", "tail", "t"', inline=True)
-            await ctx.send(embed=embed)
-            return
+                if predictin.lower() in heads:
+                    predict = 'heads'
+                elif predictin.lower() in tails:
+                    predict = 'tails'
+                else:
+                    embed = discord.Embed(
+                        title='Invalid Inputs', color=COLOUR['Fail'])
+                    embed.add_field(
+                        name='Usage', value='``!betflip [predict] [bet amount]`` ``!betflip heads 1``', inline=False)
+                    embed.add_field(
+                        name='Aliases', value='``!bf``, ``!flip``', inline=True)
+                    embed.add_field(
+                        name='Predictions', value='"heads", "head", "h", "tails", "tail", "t"', inline=True)
+                    await ctx.send(embed=embed)
+                    return
 
-        sides = ['heads', 'tails']
-        result = sides[randint(0, 1)]
-        print(f'result: {result}')
+                sides = ['heads', 'tails']
+                result = sides[randint(0, 1)]
+                print(f'result: {result}')
 
-        if result == 'heads':
-            url = 'https://clipart-library.com/images_k/quarter-transparent-background/quarter-transparent-background-19.png'
-        else:
+                if result == 'heads':
+                    url = 'https://clipart-library.com/images_k/quarter-transparent-background/quarter-transparent-background-19.png'
+                else:
 
-            url = 'https://clipart-library.com/images_k/quarter-transparent-background/quarter-transparent-background-7.png'
+                    url = 'https://clipart-library.com/images_k/quarter-transparent-background/quarter-transparent-background-7.png'
 
-        if predict == result:
-            payout = int(amount)*2
-            print(f'payout: {payout}')
-            if balance_give(ctx, ctx.author, 'wallet', payout) == True:
+                if predict == result:
+                    payout = int(amount)*2
+                    print(f'payout: {payout}')
+                    if balance_give(ctx, ctx.author, 'wallet', payout) == True:
 
-                embed = discord.Embed(
-                    title=f'Coin Flip - {result}', description=f'{ctx.author} won  {CURRENCY} {payout}!', color=COLOUR['Fun'])
-                embed.set_thumbnail(url=url)
+                        embed = discord.Embed(
+                            title=f'Coin Flip - {result}', description=f'**{ctx.author}** won  {CURRENCY} {payout}!', color=COLOUR['Fun'])
+                        embed.set_thumbnail(url=url)
 
-        else:
-            if balance_take(ctx, ctx.author, 'wallet', amount) == True:
+                else:
+                    if balance_take(ctx, ctx.author, 'wallet', amount) == True:
 
-                embed = discord.Embed(
-                    title=f'Coin Flip - {result}', description=f'{ctx.author} lost  {CURRENCY} {amount}!', color=COLOUR['Fun'])
-                embed.set_thumbnail(url=url)
-        await ctx.send(embed=embed)
+                        embed = discord.Embed(
+                            title=f'Coin Flip - {result}', description=f'**{ctx.author}** lost  {CURRENCY} {amount}!', color=COLOUR['Fun'])
+                        embed.set_thumbnail(url=url)
+                savememdata()
+                await ctx.send(embed=embed)
+
+        except Exception as e:
+            print(e)
+            traceback.print_stack()
 
 
 try:
