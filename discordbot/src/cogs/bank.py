@@ -6,7 +6,8 @@ from func import MEMDATA
 from func import memdata
 from func import load_file, savememdata
 from func import gen_rand, check_acc, sufficient
-from func import balance_give, balance_take, pos
+from func import balance_give, balance_take
+from func import pos, check_both, validate
 from func import embed_d, embed_w
 
 from func import no_acc, err
@@ -232,98 +233,26 @@ class Bank(commands.Cog):
                     description='Balance sent to DM.', color=COLOUR['Bank'])
                 await ctx.send(embed=embed)
 
-    @commands.command(aliases=['give'])
-    async def etransfer(self, ctx, amount, member: discord.Member = None):
-        if member == None:
-            member = ctx.author
-
-        '''
-    
-        try
-            load memdata
-            if author in memdata
-            
-                if member in memdata
-                    
-                    if amount > 0
-                        bal_take
-                        
-                        bal_give
-                        
-                        
-                        embed
-                        print
-                    
-                    elif amount < balance
-                        insufficient funds
-                        
-                    else
-
-                else
-                    member not found
-            
-            else
-                author not found
-                
-            
-            else
-                
-        except
-            input error
-        '''
-
-        title = 'e-Transfer'
-
-        load_file(MEMDATA)
-
+    @commands.command(aliases=['etransfer'])
+    async def give(self, ctx, amount, member: discord.Member):
+        print(f'***{PREFIX}give {ctx.author} {amount} to {member}')
         try:
-            sender_bal = memdata[str(ctx.author.id)]['bank']
-        except:
-            message = f'No bank account found for sender {ctx.author}'
-            print(message)
+            if await check_both(ctx, member, 'wallet', amount) == True and \
+                    balance_take(ctx, ctx.author, 'wallet', amount) == True and \
+                    balance_give(ctx, member, 'wallet', amount) == True:
 
-        try:
-            recipient_bal = memdata[str(member.id)]['bank']
-        except:
-
-            message
-            print(f'No bank account found for recipient {member}')
-            return
-
-        if member == None:
-            member = ctx.author
-            avatar = member.avatar.url
-
-            # please choose member to e-transfer
-            print('No member selected')
-            return
-
-        elif int(amount) <= 0:
-            # amount must be greater than 0
-            print('Cannot send <= 0')
-            return
-
-        else:
-            amount = int(amount)
-            if sender_bal < amount:
-                # insufficient funds
-                print('insufficient funds')
-                return
-            else:
-                sender_bal += - amount
-                recipient_bal += amount
-                # e-transfer sent
-                print(f'{ctx.author} sent ${amount} to {member}')
                 savememdata()
 
-        embed = discord.Embed(title='e-Transfer Success', color=COLOUR['Bank'])
-        embed.set_author(name=member, icon_url=avatar)
-        embed.add_field(name='From', value=ctx.author, inline=True)
-        embed.add_field(name='To', value=member, inline=True)
-        embed.add_field(
-            name=f'Amount', value=f'{CURRENCY} {amount}', inline=True)
+                embed = discord.Embed(color=COLOUR['Bank'])
+                embed.set_author(
+                    name=f'{member}  |  ID: {member.id}', icon_url=member.avatar.url)
+                embed.add_field(
+                    name='E-Transfer Sent', value=f'**{ctx.author}** sent  {CURRENCY} {amount} to **{member}**', inline=False)
+                await ctx.send(embed=embed)
 
-        await ctx.send(embed=embed)
+        except Exception as e:
+            print(e)
+            traceback.print_stack()
 
     @commands.command
     async def drop(self, ctx):

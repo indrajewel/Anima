@@ -167,8 +167,10 @@ class Psychopass(commands.Cog):
         try:
             embed = discord.Embed(
                 title=f'PSYCHO-PASS', color=COLOUR['Fun'])
-            embed.set_author(name=member, icon_url=avatar)
-            embed.add_field(name='User ID', value=member.id, inline=False)
+            embed.set_author(
+                name=f'''name: {member}
+id: {member.id}''', icon_url=member.avatar.url)
+            embed.set_thumbnail(url=member.avatar.url)
             embed.add_field(
                 name=f'Crime Coefficient: {cc}', value=cc_message(cc), inline=False)
             await ctx.send(embed=embed)

@@ -145,30 +145,30 @@ async def check_acc(ctx, member, embed=True):
     print(f'**check_acc({member}) id:{member.id}')
     try:
         if 'wallet' in memdata[str(member.id)] and 'bank' in memdata[str(member.id)]:
-            print(f'''**check_acc({member}): True - owns an account
+            print(f'''    check_acc({member}): True - owns an account
             ''')
             return True
 
         elif 'wallet' not in memdata[str(member.id)] and 'bank' not in memdata[str(member.id)]:
-            print(f'''**check_acc({member}): False - does not own an account
+            print(f'''    check_acc({member}): False - does not own an account
             ''')
             if embed == True:
                 await no_acc(ctx, member)
             return False
     except:
-        print(f'''**check_acc({member}): Error at memdata[{member.id}]
+        print(f'''    check_acc({member}): Error at memdata[{member.id}]
             ''')
         await data_corrupt(ctx)
         traceback.print_stack()
 
 
 async def pos(ctx, amount, embed=True):
-    print(f'**pos({amount})')
+    print(f'    **pos({amount})')
     if int(amount) > 0:
-        print(f'    pos(): True - is positive integer')
+        print(f'        pos(): True - is positive integer')
         return True
     else:
-        print(f'    pos(): False - is not positive integer')
+        print(f'        pos(): False - is not positive integer')
         embed = discord.Embed(color=COLOUR['Fail'])
         embed.add_field(name='Invalid amount.',
                         value='Amount must be greater than 0.', inline=True)
@@ -203,11 +203,21 @@ async def sufficient(ctx, account, amount):
 
 
 async def validate(ctx, member, account, amount):
-    print(f'***validate({account}, {amount})')
+    print(f'    ***validate({account}, {amount})')
     if await check_acc(ctx, member) == True and \
             await sufficient(ctx, account, amount) == True:
         return True
 
+    else:
+        return False
+
+
+async def check_both(ctx, member, account, amount):
+    print(f'    ***check_both({ctx.author}, {member}, {account}, {amount})')
+    if await check_acc(ctx, ctx.author, embed=True) and \
+            await check_acc(ctx, member, embed=True) and \
+            await sufficient(ctx, account, amount):
+        return True
     else:
         return False
 
@@ -220,11 +230,11 @@ def balance_give(ctx, member, account, amount):
         memdata[str(member.id)][str(account)] += int(amount)
         newbal = memdata[str(member.id)][str(account)]
         print(
-            f'    ***balance_give({member}, {account}, {amount}) Total: {newbal}')
+            f'    balance_give({member}, {account}, {amount}) Total: {newbal}')
         return True
 
     except:
-        print('***balance_give(): Error; check params, check_acc(), pos()')
+        print('    balance_give(): Error; check params, check_acc(), pos()')
 
 
 def balance_take(ctx, member, account, amount):
@@ -233,13 +243,13 @@ def balance_take(ctx, member, account, amount):
         memdata[str(member.id)][str(account)] -= int(amount)
         newbal = memdata[str(member.id)][str(account)]
         print(
-            f'    ***balance_take({member}, {account}, {amount}) Total: {newbal}')
+            f'    balance_take({member}, {account}, {amount}) Total: {newbal}')
         return True
 
     except Exception as e:
         print(e)
         traceback.print_stack()
-        print('***balance_take(): Error; check params, check_acc(), pos()')
+        print('    balance_take(): Error; check params, check_acc(), pos()')
 
 
 memdata = load_file(MEMDATA)

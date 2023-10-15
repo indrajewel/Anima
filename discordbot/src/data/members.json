@@ -1,8 +1,8 @@
 {
     "435615739274330154": {
         "name": "moonbowels",
-        "crime_coeff": 32.1,
-        "wallet": 52,
+        "crime_coeff": 40.4,
+        "wallet": 49,
         "bank": 202
     },
     "899726570233692161": {
@@ -38,7 +38,15 @@
     "997280431324024903": {
         "name": "starboofer",
         "crime_coeff": 146.4,
-        "wallet": 9,
+        "wallet": 12,
         "bank": 201
+    },
+    "149287680029622272": {
+        "name": "edgehead",
+        "crime_coeff": 22.0
+    },
+    "899731124186669127": {
+        "name": "rocklobster420",
+        "crime_coeff": 21.8
     }
 }
