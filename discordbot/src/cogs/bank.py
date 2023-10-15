@@ -52,7 +52,7 @@ class Bank(commands.Cog):
         member = ctx.author
         avatar = member.avatar.url
 
-        if await check_acc(ctx, member) == True:
+        if await check_acc(ctx, member, embed=False) == True:
             wallet = memdata[str(ctx.author.id)]['wallet']
             bank = memdata[str(ctx.author.id)]['bank']
 
@@ -101,7 +101,7 @@ class Bank(commands.Cog):
                 embed = discord.Embed(color=COLOUR['Bank'])
                 embed.set_author(name=member, icon_url=member.avatar.url)
                 embed.add_field(
-                    name='', value=f'{member} opened a bank account!', inline=True)
+                    name='', value=f'**{member}** opened a bank account!', inline=True)
                 await ctx.send(embed=embed)
 
     @commands.command(aliases=['award'])

@@ -13,7 +13,7 @@ import os
 import traceback
 
 TEST_MODE = True
-DISABLE_EXT = ['testfuncs.py, ', '__pycache__', 'cog1.py']
+DISABLE_EXT = ['testfuncs.py, ', '__pycache__', 'cog1.py', 'aa-events.py']
 
 intents = discord.Intents.all()
 intents.members = True
@@ -53,7 +53,8 @@ async def on_ready():
             traceback.print_tb(e.__traceback__)
 
     print(f'**Extensions Loaded: {loaded}')
-    print(f'**Extensions Failed: {failed}')
+    print(f'''**Extensions Failed: {failed}
+    ''')
 
     if TEST_MODE == True:
         return

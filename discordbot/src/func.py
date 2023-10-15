@@ -22,6 +22,9 @@ print(SPAM)
 '''
 
 
+'## SAVE / LOAD ##'
+
+
 def load_file(file_dir):
     if '.json' in file_dir:
         with open(file_dir, 'r') as infile:
@@ -62,7 +65,7 @@ def gen_rand(digits):
     return string
 
 
-## SEND EMBED: NO BANK ACCOUNT FOUND ##
+'## BANK EMBEDS ##'
 
 
 async def no_acc(ctx, member: discord.Member=None):
@@ -82,8 +85,6 @@ async def no_acc(ctx, member: discord.Member=None):
                         value=f'**{member}** does not have a bank account. Please open an account with ``!open_account``', inline=True)
         await ctx.send(embed=embed)
 
-## SEND EMBED: DATA CORRUPTED ##
-
 
 async def data_corrupt(ctx):
     embed = discord.Embed(color=COLOUR['Fail'])
@@ -91,16 +92,12 @@ async def data_corrupt(ctx):
                     value=f'Please reset with ``!open_account`` and/or notify bot owner <@435615739274330154>.', inline=True)
     await ctx.send(embed=embed)
 
-## SEND EMBED: UNKNOWN ERROR ##
-
 
 async def err(ctx):
     embed = discord.Embed(color=COLOUR['Fail'])
     embed.add_field(name=':no_entry: Unknown Error',
                     value=f'Please notify bot owner {BOT_OWNER}!', inline=True)
     await ctx.send(embed=embed)
-
-## SEND EMBED: INVALID MEMBER ##
 
 
 async def invalidmem(ctx):
@@ -118,10 +115,10 @@ async def embed_d(ctx, member, account, amount):
 
     if account == 'wallet':
         embed.add_field(
-            name='Funds Added', value=f"Deposited  {CURRENCY} {amount} to {member}'s wallet.", inline=True)
+            name='Funds Added', value=f"Deposited  {CURRENCY} {amount} to **{member}**'s wallet.", inline=True)
     elif account == 'bank':
         embed.add_field(
-            name='Funds Added', value=f"Deposited  {CURRENCY} {amount} to {member}'s bank account.", inline=True)
+            name='Funds Added', value=f"Deposited  {CURRENCY} {amount} to **{member}**'s bank account.", inline=True)
 
     await ctx.send(embed=embed)
 
@@ -133,17 +130,18 @@ async def embed_w(ctx, member, account, amount):
 
     if account == 'wallet':
         embed.add_field(
-            name='Funds Removed', value=f"Widthdrew  {CURRENCY} {amount} from {member}'s wallet.", inline=True)
+            name='Funds Removed', value=f"Widthdrew  {CURRENCY} {amount} from **{member}**'s wallet.", inline=True)
     elif account == 'bank':
         embed.add_field(
-            name='Funds Removed', value=f"Widthdrew  {CURRENCY} {amount} from {member}'s bank account.", inline=True)
+            name='Funds Removed', value=f"Widthdrew  {CURRENCY} {amount} from **{member}**'s bank account.", inline=True)
 
     await ctx.send(embed=embed)
 
-## CHECK VALUE: IF USER HAS ACCOUNT ##
+
+'## BANK FUNCTIONS ##'
 
 
-async def check_acc(ctx, member):
+async def check_acc(ctx, member, embed=True):
     print(f'**check_acc({member}) id:{member.id}')
     try:
         if 'wallet' in memdata[str(member.id)] and 'bank' in memdata[str(member.id)]:
@@ -154,8 +152,8 @@ async def check_acc(ctx, member):
         elif 'wallet' not in memdata[str(member.id)] and 'bank' not in memdata[str(member.id)]:
             print(f'''**check_acc({member}): False - does not own an account
             ''')
-
-            await no_acc(ctx, member)
+            if embed == True:
+                await no_acc(ctx, member)
             return False
     except:
         print(f'''**check_acc({member}): Error at memdata[{member.id}]
@@ -164,7 +162,7 @@ async def check_acc(ctx, member):
         traceback.print_stack()
 
 
-async def pos(ctx, amount):
+async def pos(ctx, amount, embed=True):
     print(f'pos({amount})')
     if int(amount) > 0:
         print(f'    pos(): True - is positive integer')
@@ -174,7 +172,8 @@ async def pos(ctx, amount):
         embed = discord.Embed(color=COLOUR['Fail'])
         embed.add_field(name='Invalid amount.',
                         value='Amount must be greater than 0.', inline=True)
-        await ctx.send(embed=embed)
+        if embed == True:
+            await ctx.send(embed=embed)
         return False
 
 
