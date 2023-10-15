@@ -41,7 +41,24 @@ class Fun(commands.Cog):
 
         avatar = member.avatar.url
 
-        gay = randint(0, 100)
+        gen = randint(1, 25)
+        print(f'gen: {gen}')
+        try:
+            if gen == 1:
+                gay = randint(-100, 0)
+            elif gen >= 9 and gen <= 11:
+                gay = f'**69**'
+            elif gen == 20 or gen == 21:
+                gay = randint(100, 200)
+            elif gen == 22:
+                gay = randint(200, 500)
+            else:
+                gay = randint(0, 100)
+
+            print(f'gay: {gay}.')
+        except Exception as e:
+            print(e)
+            traceback.print_stack()
 
         embed = discord.Embed(
             description=f'**{member}** is {gay}% gay.', color=COLOUR['Fun'])
