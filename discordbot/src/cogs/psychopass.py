@@ -3,13 +3,13 @@ from discord.ext import commands
 import config
 from config import COLOUR
 
-from random import randint
+from random import randint, uniform
 
 from func import MEMDATA, BADWORDS, SPAM
 from func import memdata
 from func import load_file, savememdata
 
-from func import balance_give, balance_take, sufficient
+from func import check_acc, balance_give, balance_take, sufficient
 
 '''
 member = ctx.author
@@ -29,7 +29,6 @@ cc_message = [f'{member} is drone, vehicles, or other hardened targets that pose
 
 
 def cc_level(cc):
-
     if cc < 100:
         level = 1
     elif cc < 299:
@@ -41,13 +40,13 @@ def cc_level(cc):
     return level
 
 
-def cc_message(member, cc):
+def cc_message(cc):
     cc_level(cc)
-    print(f'cc_embed({member}, {cc})')
+    print(f'cc_embed({cc})')
     message = [f'Suspect is drone, vehicles, or other hardened targets that poses a threat. Without the Crime Coefficient, a Threat Status is given (such as A+) and the Dominator will automatically switch to Destroy Decomposer.',
-               f'**{member}** is not a target for enforcement action. The trigger of the Dominator will be locked.',
-               f'**{member}** is classified as a latent criminal and is a target for enforcement action. The Dominator is set to Non-Lethal Paralyzer mode. Suspect under fire will be stunned into a stunned state of immobility and, oftentimes, a lack of consciousness.',
-               f'**{member}** poses a serious threat to the society. Lethal force is authorized. The Dominator will automatically switch to Lethal Eliminator. Suspect that is hit by Lethal Eliminator will bloat and explode.']
+               f'Suspect is not a target for enforcement action. The trigger of the Dominator will be locked.',
+               f'Suspect is classified as a latent criminal and is a target for enforcement action. The Dominator is set to Non-Lethal Paralyzer mode. Suspect under fire will be stunned into a stunned state of immobility and, oftentimes, a lack of consciousness.',
+               f'Suspect poses a serious threat to the society. Lethal force is authorized. The Dominator will automatically switch to Lethal Eliminator. Suspect that is hit by Lethal Eliminator will bloat and explode.']
 
     return message[cc_level(cc)]
 
@@ -56,30 +55,30 @@ def cc_add(member, coef=1, base=0):
     oldcc = memdata[str(member.id)]['crime_coeff']
     print(f'**cc_add({member}, coef: {coef}x, base: +{base}) CC = {oldcc}')
 
-    score = randint(1, 9)*coef+base
-    newcc = oldcc+score
+    score = round((uniform(1, 9)*coef+base), 1)
+    newcc = round((oldcc+score), 1)
     memdata[str(member.id)]['crime_coeff'] = newcc
     print(f'    {member} CC increased by {score}, total {newcc}')
-    return True, score
+    return True
 
 
 def cc_take(member, coef=1, base=0):
     oldcc = memdata[str(member.id)]['crime_coeff']
     print(f'**cc_take({member}, coef: {coef}x, base: +{base}) CC = {oldcc}')
-    score = randint(1, 9)*coef+base
+    score = round((uniform(1, 9)*coef+base), 1)
 
     if oldcc > 0 and score <= oldcc:
 
-        newcc = oldcc-score
+        newcc = round((oldcc+score), 1)
         memdata[str(member.id)]['crime_coeff'] = newcc
         print(f'    {member} CC decreased by {score}, total {newcc}')
         return True, score
 
     elif score > oldcc:
-        newcc = 0
+        newcc = 10
         memdata[str(member.id)]['crime_coeff'] = newcc
         print(f'    {member} CC decreased by {score}, total {newcc}')
-        return True, score
+        return True
 
     else:
         return False
@@ -117,7 +116,7 @@ class Psychopass(commands.Cog):
         # check if in memdata
         if str(author.id) not in memdata:
             # updates memdata
-            cc = randint(15, 25)
+            cc = round(uniform(15, 25), 1)
             memdata[str(author.id)] = {'name': str(author), 'crime_coeff': cc}
             print(
                 f'added {author} ({author.id}) to memdata with crime_coeff {cc}')
@@ -136,7 +135,7 @@ class Psychopass(commands.Cog):
                 count += 1
                 words.append(idx)
 
-                cc_add(author)
+                cc_add(author, coef=0.5)
 
         if count > 0:
             print(f'trigger: {words}')
@@ -170,8 +169,8 @@ class Psychopass(commands.Cog):
                 title=f'PSYCHO-PASS', color=COLOUR['Fun'])
             embed.set_author(name=member, icon_url=avatar)
             embed.add_field(name='User ID', value=member.id, inline=False)
-            embed.add_field(name=f'Crime Coefficient: {cc}', value=cc_message(
-                member, cc), inline=False)
+            embed.add_field(
+                name=f'Crime Coefficient: {cc}', value=cc_message(cc), inline=False)
             await ctx.send(embed=embed)
 
         except Exception as e:
@@ -223,7 +222,8 @@ class Psychopass(commands.Cog):
     @commands.command()
     async def bribe(self, ctx, amount=50):
         try:
-            if await sufficient(ctx, 'wallet', amount) == True and \
+            if await check_acc(ctx, ctx.author, embed=True) and \
+                    await sufficient(ctx, 'wallet', amount) == True and \
                     balance_take(ctx, ctx.author, 'wallet', amount) == True and \
                     bool(cc_take(ctx.author, base=amount//2)) == True:
                 savememdata()

@@ -68,9 +68,8 @@ class Bank(commands.Cog):
 
             # PUBLIC EMBED
             if isinstance(ctx.channel, discord.channel.DMChannel) == False:
-                embed = discord.Embed(color=COLOUR['Bank'])
-                embed.add_field(
-                    name='', value=f'Account already exists.', inline=True)
+                embed = discord.Embed(
+                    description=f'You already own an account.', color=COLOUR['Bank'])
                 await ctx.send(embed=embed)
         else:
             print(memdata)
@@ -98,10 +97,8 @@ class Bank(commands.Cog):
 
             # Send embed Public
             if isinstance(ctx.channel, discord.channel.DMChannel) == False:
-                embed = discord.Embed(color=COLOUR['Bank'])
-                embed.set_author(name=member, icon_url=member.avatar.url)
-                embed.add_field(
-                    name='', value=f'**{member}** opened a bank account!', inline=True)
+                embed = discord.Embed(
+                    description=f'**{member}** opened a bank account!', color=COLOUR['Bank'])
                 await ctx.send(embed=embed)
 
     @commands.command(aliases=['award'])
@@ -231,9 +228,8 @@ class Bank(commands.Cog):
             await ctx.author.send(embed=embed)
 
             if isinstance(ctx.channel, discord.channel.DMChannel) == False:
-                embed = discord.Embed(color=COLOUR['Bank'])
-                embed.add_field(
-                    name='', value=f'Balance sent to DM.', inline=True)
+                embed = discord.Embed(
+                    description='Balance sent to DM.', color=COLOUR['Bank'])
                 await ctx.send(embed=embed)
 
     @commands.command(aliases=['give'])

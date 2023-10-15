@@ -1,19 +1,13 @@
 {
     "435615739274330154": {
         "name": "moonbowels",
-        "crime_coeff": 21,
+        "crime_coeff": 21.1,
         "wallet": 10,
         "bank": 200
     },
-    "997280431324024903": {
-        "name": "starboofer",
-        "crime_coeff": 33,
-        "wallet": 10,
-        "bank": 752
-    },
     "899726570233692161": {
         "name": "cocoleti",
-        "crime_coeff": 0,
+        "crime_coeff": 42.3,
         "wallet": 10,
         "bank": 200
     },
@@ -23,7 +17,7 @@
     },
     "134864627224936449": {
         "name": "thailan",
-        "crime_coeff": 0,
+        "crime_coeff": 22.5,
         "wallet": 10,
         "bank": 200
     },
@@ -35,22 +29,16 @@
         "name": "Nadeko#6685",
         "crime_coeff": 0
     },
-    "899737967495634985": {
-        "name": "lysergibeaver",
-        "crime_coeff": 0
-    },
     "640588521278668841": {
         "name": "Ethan1729#9388",
-        "crime_coeff": 0,
+        "crime_coeff": 34.2,
         "wallet": 10,
         "bank": 200
     },
-    "557387395541106712": {
-        "name": "terassex",
-        "crime_coeff": 0
-    },
-    "899731124186669127": {
-        "name": "rocklobster420",
-        "crime_coeff": 0
+    "997280431324024903": {
+        "name": "starboofer",
+        "crime_coeff": 146.4,
+        "wallet": 9,
+        "bank": 201
     }
 }
