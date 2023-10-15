@@ -2,8 +2,9 @@ import discord
 from discord.ext import commands
 from config import COLOUR, CURRENCY, PREFIX
 
-# from func import memdata, badwords, spamlist, balance_give, balance_take
 from func import load_file, savememdata
+from func import memdata
+from func import balance_give, balance_take
 import time
 from random import randint, choice
 
@@ -67,228 +68,54 @@ class Fun(commands.Cog):
     @commands.command(aliases=['bf', 'flip', 'coinflip'])
     async def betflip(self, ctx, predictin, amount=None):
 
-        '''
         heads = ['heads', 'head', 'h']
         tails = ['tails', 'tail', 't']
 
         if predictin.lower() in heads:
-            predictin = 'heads'
+            predict = 'heads'
         elif predictin.lower() in tails:
-            predictin = 'tails'
-
-        sides = ['heads', 'tails']
-        result = choice(sides)
-
-        if predictin == result:
-            payout = int(amount)*2
-            print(f'payout: {payout}')
-
-            balance_give(ctx, ctx.author, 'wallet', payout)
-
-            embed = discord.Embed(title='Coin Flip', color=colour)
-            embed.set_author(name=ctx.author, icon_url=ctx.author.avatar.url)
-            embed.add_field(name='', value=f'Flipped {result}', inline=False)
-            embed.add_field(name='', value=f'{ctx.author} won  {CURRENCY}{payout}!', inline=False)
-            await ctx.send(embed=embed)
-
-
-
-
-        if predictin == None
-
-        elif (check_acc() and sufficient() )
-            if bank true
-
-            else
-                error bank not found
-
-        elif amount > balance
-            insufficienr funds
-
-        else
-            unknown err
-
-        OR
-        0 < amount < balance
-
-        if amount > 0
-            try:
-                if bank true
-                    flip
-
-                    if predict true
-                        award
-
-                    else
-                        remove
-
-                else
-                    bank error not exist
-
-            except
-
-        else
-            regular flip
-
-
-        '''
-
-        '''
-        if amount > 0:
-            try:
-                wallet = memdata[str(ctx.author.id)]['wallet']
-
-                if int(amount) <= 0:
-                    await ctx.send(f'invalid bet amount. must be > 0')
-                    embed = discord.Embed(
-                        title='', color=COLOUR['Fail'])
-                    embed.add_field(
-                        name='Invalid Bet Amount', value=f"Bet must be greater than {CURRENCY}0", inline=False)
-                    await ctx.send(embed=embed)
-
-                    return
-                elif int(amount) > wallet:
-                    print(wallet)
-
-                    await ctx.send(f'insufficient funds')
-
-                    embed = discord.Embed(
-                        title='Insufficient Funds', color=COLOUR['Fail'])
-                    embed.add_field(
-                        name='Wallet Balance', value=f"{CURRENCY}{wallet}", inline=False)
-                    await ctx.send(embed=embed)
-                    return
-
-                else:
-
-                    sides = ['h', 't']
-                    result = choice(sides)
-
-                    print(f'result:{result}')
-
-                    try:
-                        if predict.lower() == result:
-                            payout = int(amount)*2
-                            print(f'payout {payout}')
-
-                            balance_give(ctx.author, 'wallet', payout)
-
-                            embed = discord.Embed(
-                                title='Coin Flip', color=colour)
-                            embed.set_author(
-                                name=ctx.author, icon_url=ctx.author.avatar.url)
-                            embed.add_field(
-                                name='', value=f'Flipped {result}', inline=False)
-                            embed.add_field(
-                                name='', value=f'{ctx.author} won  {CURRENCY}{payout}!', inline=False)
-                            await ctx.send(embed=embed)
-
-                        else:
-                            balance_take(ctx.author, 'wallet', amount)
-
-                    except:
-                        print(f'failed check')
-
-                    # savememdata()
-
-            except Exception as e:
-                print('failed all')
-                traceback.print_stack()
-
-                await ctx.send('failed')
-
-                embed = discord.Embed(color=0xff0000)
-                embed.add_field(
-                    name='Invalid Input', value=f'Example: ``{PREFIX}betflip heads 5``', inline=False)
-                await ctx.send(embed=embed)
-        
-        '''
-        if (predictin or amount) == None:
-
-            # invalid Input
-            embed = discord.Embed(title='Invalid Input', color=COLOUR['Fail'])
+            predict = 'tails'
+        else:
+            embed = discord.Embed(color=0xff0000)
             embed.add_field(
-                name='', value=f'Usage: ``{PREFIX}betflip [prediction] [bet amount]``', inline=False)
+                name='Invalid Inputs', value='Usage: ``!betflip [predict] [bet amount]`` ``!betflip heads 1``', inline=False)
+            embed.add_field(name='', value='Aliases: !bf, !flip', inline=True)
             embed.add_field(
-                name='', value=f'Example: ``{PREFIX}betflip heads 5``', inline=False)
+                name='', value='Predictions: "heads", "head", "h", "tails", "tail", "t"', inline=True)
             await ctx.send(embed=embed)
-
-            print(f'predictin: {predictin}')
-            predict = predictin[0]
-            print(f'predict: {predict}')
-            print(amount)
             return
 
+        sides = ['heads', 'tails']
+        result = sides[randint(0, 1)]
+        print(f'result: {result}')
+
+        if result == 'heads':
+            url = 'https://clipart-library.com/images_k/quarter-transparent-background/quarter-transparent-background-19.png'
         else:
-            try:
-                wallet = memdata[str(ctx.author.id)]['wallet']
 
-                if int(amount) <= 0:
-                    await ctx.send(f'invalid bet amount. must be > 0')
-                    embed = discord.Embed(
-                        title='', color=COLOUR['Fail'])
-                    embed.add_field(
-                        name='Invalid Bet Amount', value=f"Bet must be greater than {CURRENCY}0", inline=False)
-                    await ctx.send(embed=embed)
+            url = 'https://clipart-library.com/images_k/quarter-transparent-background/quarter-transparent-background-7.png'
 
-                    return
-                elif int(amount) > wallet:
-                    print(wallet)
+        if predict == result:
+            payout = int(amount)*2
+            print(f'payout: {payout}')
+            if balance_give(ctx, ctx.author, 'wallet', payout) == True:
 
-                    await ctx.send(f'insufficient funds')
+                embed = discord.Embed(
+                    title=f'Coin Flip - {result}', description=f'{ctx.author} won  {CURRENCY} {payout}!', color=COLOUR['Fun'])
+                embed.set_thumbnail(url=url)
 
-                    embed = discord.Embed(
-                        title='Insufficient Funds', color=COLOUR['Fail'])
-                    embed.add_field(
-                        name='Wallet Balance', value=f"{CURRENCY}{wallet}", inline=False)
-                    await ctx.send(embed=embed)
-                    return
+        else:
+            if balance_take(ctx, ctx.author, 'wallet', amount) == True:
 
-                else:
-
-                    sides = ['h', 't']
-                    result = choice(sides)
-
-                    print(f'result:{result}')
-
-                    try:
-                        if predict.lower() == result:
-                            payout = int(amount)*2
-                            print(f'payout {payout}')
-
-                            balance_give(ctx.author, 'wallet', payout)
-
-                            embed = discord.Embed(
-                                title='Coin Flip', color=COLOUR['Fun'])
-                            embed.set_author(
-                                name=ctx.author, icon_url=ctx.author.avatar.url)
-                            embed.add_field(
-                                name='', value=f'Flipped {result}', inline=False)
-                            embed.add_field(
-                                name='', value=f'{ctx.author} won  {CURRENCY}{payout}!', inline=False)
-                            await ctx.send(embed=embed)
-
-                        else:
-                            balance_take(ctx.author, 'wallet', amount)
-
-                    except:
-                        print(f'failed check')
-
-                    # savememdata()
-
-            except Exception as e:
-                print('failed all')
-                traceback.print_stack()
-
-                await ctx.send('failed')
-
-                embed = discord.Embed(color=0xff0000)
-                embed.add_field(
-                    name='Invalid Input', value=f'Example: ``{PREFIX}betflip heads 5``', inline=False)
-                await ctx.send(embed=embed)
-
-            pass
+                embed = discord.Embed(
+                    title=f'Coin Flip - {result}', description=f'{ctx.author} lost  {CURRENCY} {amount}!', color=COLOUR['Fun'])
+                embed.set_thumbnail(url=url)
+        await ctx.send(embed=embed)
 
 
-async def setup(client):
-    await client.add_cog(Fun(client))
+try:
+    async def setup(client):
+        await client.add_cog(Fun(client))
+except Exception as e:
+    print(e)
+    traceback.print_stack()

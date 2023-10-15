@@ -205,7 +205,7 @@ async def sufficient(ctx, account, amount):
 def balance_give(ctx, member, account, amount):
     print(f'***balance_give({member}, {account}, {amount})')
     try:
-        memdata[str(member.id)][str(account)] += amount
+        memdata[str(member.id)][str(account)] += int(amount)
         newbal = memdata[str(member.id)][str(account)]
         print(
             f'    ***balance_give({member}, {account}, {amount}) Total: {newbal}')
@@ -218,13 +218,15 @@ def balance_give(ctx, member, account, amount):
 def balance_take(ctx, member, account, amount):
     print(f'***balance_take({member}, {account}, {amount})')
     try:
-        memdata[str(member.id)][str(account)] -= amount
+        memdata[str(member.id)][str(account)] -= int(amount)
         newbal = memdata[str(member.id)][str(account)]
         print(
             f'    ***balance_take({member}, {account}, {amount}) Total: {newbal}')
         return True
 
-    except:
+    except Exception as e:
+        print(e)
+        traceback.print_stack()
         print('***balance_take(): Error; check params, check_acc(), pos()')
 
 
