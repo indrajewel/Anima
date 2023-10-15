@@ -43,9 +43,8 @@ class Fun(commands.Cog):
 
         gay = randint(0, 100)
 
-        embed = discord.Embed(color=COLOUR['Fun'])
-        embed.set_author(name=member, icon_url=avatar)
-        embed.add_field(name='', value=f'{member} is {gay}% gay.', inline=True)
+        embed = discord.Embed(
+            description=f'**{member}** is {gay}% gay.', color=COLOUR['Fun'])
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['bf', 'flip', 'coinflip'])
