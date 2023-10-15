@@ -29,9 +29,8 @@ cc_message = [f'{member} is drone, vehicles, or other hardened targets that pose
 
 
 def cc_level(cc):
-    if cc == 0:
-        hue = 0xffffff
-    elif cc < 100:
+
+    if cc < 100:
         level = 1
     elif cc < 299:
         level = 2
@@ -39,7 +38,7 @@ def cc_level(cc):
         level = 3
     else:
         level = 0
-    return level, hue
+    return level
 
 
 def cc_message(member, cc):
@@ -98,6 +97,7 @@ def cc_rand(member, coef=1, base=0):
 
 
 async def cc_embed(ctx, member, delta, add):
+
     pass
 
 
@@ -117,8 +117,10 @@ class Psychopass(commands.Cog):
         # check if in memdata
         if str(author.id) not in memdata:
             # updates memdata
-            memdata[str(author.id)] = {'name': str(author), 'crime_coeff': 0}
-            print(f'added {author} ({author.id}) to memdata')
+            cc = randint(15, 25)
+            memdata[str(author.id)] = {'name': str(author), 'crime_coeff': cc}
+            print(
+                f'added {author} ({author.id}) to memdata with crime_coeff {cc}')
             savememdata()
 
         # ignore commands
@@ -172,9 +174,10 @@ class Psychopass(commands.Cog):
         '''
         try:
             embed = discord.Embed(
-                title=f'Crime Coefficient: {cc}', color=COLOUR['Fun'])
+                title=f'PSYCHO-PASS', color=COLOUR['Fun'])
             embed.set_author(name=member, icon_url=avatar)
-            embed.add_field(name='', value=cc_message(
+            embed.add_field(name='User ID', value=member.id, inline=False)
+            embed.add_field(name=f'Crime Coefficient: {cc}', value=cc_message(
                 member, cc), inline=False)
             await ctx.send(embed=embed)
 

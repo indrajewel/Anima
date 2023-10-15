@@ -13,7 +13,9 @@
     },
     "899726570233692161": {
         "name": "cocoleti",
-        "crime_coeff": 0
+        "crime_coeff": 0,
+        "wallet": 10,
+        "bank": 200
     },
     "340215952144859137": {
         "name": "therabbitman",
@@ -21,7 +23,9 @@
     },
     "134864627224936449": {
         "name": "thailan",
-        "crime_coeff": 0
+        "crime_coeff": 0,
+        "wallet": 10,
+        "bank": 200
     },
     "1155922109936185464": {
         "name": "Luna#5424",
@@ -37,7 +41,9 @@
     },
     "640588521278668841": {
         "name": "Ethan1729#9388",
-        "crime_coeff": 0
+        "crime_coeff": 0,
+        "wallet": 10,
+        "bank": 200
     },
     "557387395541106712": {
         "name": "terassex",

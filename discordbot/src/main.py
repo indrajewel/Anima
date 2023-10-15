@@ -125,14 +125,6 @@ async def on_message(message):
 ''')
     await client.process_commands(message)
 
-    # adds member to memdata
-    if str(message.author.id) not in memdata:
-
-        memdata[str(message.author.id)] = {
-            'name': str(message.author), 'crime_coeff': 0}
-        print(f'added {message.author} ({message.author.id}) to memdata')
-        savememdata()
-
 
 @client.event
 async def on_command_error(ctx, error):
