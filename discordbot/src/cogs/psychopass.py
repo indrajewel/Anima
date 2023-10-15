@@ -44,10 +44,10 @@ def cc_level(cc):
 def cc_message(member, cc):
     cc_level(cc)
     print(f'cc_embed({member}, {cc})')
-    message = [f'{member} is drone, vehicles, or other hardened targets that poses a threat. Without the Crime Coefficient, a Threat Status is given (such as A+) and the Dominator will automatically switch to Destroy Decomposer.',
-               f'{member} is not a target for enforcement action. The trigger of the Dominator will be locked.',
+    message = [f'Suspect is drone, vehicles, or other hardened targets that poses a threat. Without the Crime Coefficient, a Threat Status is given (such as A+) and the Dominator will automatically switch to Destroy Decomposer.',
+               f'**{member}** is not a target for enforcement action. The trigger of the Dominator will be locked.',
                f'**{member}** is classified as a latent criminal and is a target for enforcement action. The Dominator is set to Non-Lethal Paralyzer mode. Suspect under fire will be stunned into a stunned state of immobility and, oftentimes, a lack of consciousness.',
-               f'{member} poses a serious threat to the society. Lethal force is authorized. The Dominator will automatically switch to Lethal Eliminator. Suspect that is hit by Lethal Eliminator will bloat and explode.']
+               f'**{member}** poses a serious threat to the society. Lethal force is authorized. The Dominator will automatically switch to Lethal Eliminator. Suspect that is hit by Lethal Eliminator will bloat and explode.']
 
     return message[cc_level(cc)]
 
@@ -165,13 +165,6 @@ class Psychopass(commands.Cog):
         else:
             level = 0
 
-        '''
-        embed = discord.Embed(
-            title=f'Crime Coefficient: {cc}', color=COLOUR['Fun'])
-        embed.set_author(name=member, icon_url=avatar)
-        embed.add_field(name='', value=cc_message[level], inline=False)
-        await ctx.send(embed=embed)
-        '''
         try:
             embed = discord.Embed(
                 title=f'PSYCHO-PASS', color=COLOUR['Fun'])
