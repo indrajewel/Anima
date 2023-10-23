@@ -12,6 +12,7 @@ from random import randint, choice
 import traceback
 
 SPAM = 'C:\\Users\\Adrian\\git\\Anima\\discordbot\\src\\data\\spamlist.txt'
+PICKUP = 'C:\\Users\\Adrian\\git\\Anima\\discordbot\\src\\data\\pickup.txt'
 
 '''
 member = ctx.author
@@ -35,6 +36,17 @@ class Fun(commands.Cog):
             message = spamlist[randint(0, len(spamlist)-1)]
             await ctx.send(f'<@{member.id}> {message}')
             time.sleep(0.75)
+
+    @commands.command()
+    async def pickup(self, ctx):
+        try:
+            pickuplist = load_file(PICKUP)
+            message = choice(pickuplist)
+            embed = discord.Embed(description=message, color=COLOUR['Fun'])
+            await ctx.send(embed=embed)
+        except Exception as e:
+            print(e)
+            traceback.print_stack()
 
     @commands.command(aliases=['gaydar'])
     async def howgay(self, ctx, member: discord.Member = None):
