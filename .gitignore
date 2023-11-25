@@ -1,5 +1,10 @@
 # TOKEN
 bottoken.py
+bottoken.py
+members.json
+pickup.txt
+spamlist.txt
+badwords.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
