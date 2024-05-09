@@ -49,5 +49,4 @@ WIP Discord Bot
 ## fun.py
 ### commands
 	spam - Functional
-	howgay - Functional
 	betflip - awaiting bank and funcs
