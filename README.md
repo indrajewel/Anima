@@ -1,5 +1,5 @@
 # Anima
-WIP Discord Bot
+Discord Bot
 - File saving and loading functional
 - Economy System WIP
 
